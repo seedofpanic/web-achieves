@@ -1,0 +1,20 @@
+body {
+
+}
+.login-page .column {
+    max-width: 450px;
+}
+.login-page {
+    background-color: #DADADA;
+    height: 100%
+}
+.login-page>div {
+    height: 100%;
+}
+body>.container {
+    min-height: 300px;
+    margin-top: 40px;
+}
+.clear {
+    clear: both;
+}
