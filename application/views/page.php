@@ -12,11 +12,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <script type="text/javascript" src="/js/app/app.js"></script>
     <script type="text/javascript" src="/js/semantic.min.js"></script>
 </head>
-<body class="<?if (!$logged_in) {
+<body>
+<div class="<?if (!$logged_in) {
     echo 'login-page';
  }else{
     echo 'account-page';
- }?>">
+ }?>"></div>
 
 
 </body>

@@ -1,0 +1,29 @@
+<script>
+    var matches = document.cookie.match(new RegExp(
+            "(?:^|; )wa_session=([^;]*)"
+    ));
+    var session = matches ? decodeURIComponent(matches[1]) : undefined;
+    if (session) {
+        top.postMessage('session=' + session, '*');
+    } else {
+        var xmlhttp;
+        if (window.XMLHttpRequest)
+        {// code for IE7+, Firefox, Chrome, Opera, Safari
+            xmlhttp=new XMLHttpRequest();
+        }
+        else
+        {// code for IE6, IE5
+            xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        xmlhttp.onreadystatechange=function() {
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                var session = xmlhttp.responseText;
+                var date = new Date(32503680000000);
+                document.cookie = "wa_session=" + session + "; path=/; expires=" + date.toUTCString();
+                top.postMessage('session=' + session, '*');
+            }
+        };
+        xmlhttp.open("GET","/api/create_session",true);
+        xmlhttp.send();
+    }
+</script>

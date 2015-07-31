@@ -13,6 +13,7 @@
         <div ng-switch on="ac.action">
             <div ng-switch-when="domains" class="domains-list"></div>
             <div ng-switch-when="achivments" class="achivments-list"></div>
+            <div ng-switch-when="domain" class="domain-config"></div>
         </div>
     </div>
 </div>

@@ -1,9 +1,9 @@
-<div class="ui huge breadcrumb">
-    <a class="section" href="/">Домены</a>
-    <i class="right chevron icon divider"></i>
-    <div class="active section">Достижения</div>
-</div>
 <div ng-controller="achivmentsController as ac" class="ui segment bottom attached">
+    <div class="ui huge breadcrumb">
+        <a class="section" href="/">Домены</a>
+        <i class="right chevron icon divider"></i>
+        <div class="active section">Достижения</div>
+    </div>
     <div class="achivments ui segments">
         <div class="avivment ui segment" ng-repeat="achivment in ac.achivments">
             <div class="info" ng-hide="achivment.edit">

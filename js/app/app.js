@@ -102,7 +102,8 @@
                 if (achivment.loading) {return}
                 achivment.loading = true;
                 var id = achivment.id ? achivment.id : 0;
-                $http.post(API_URL + 'achivment/' + id  + '/save', $.param(achivment)).success(function (){
+                $http.post(API_URL + 'achivment/' + id  + '/save', $.param(achivment)).success(function (achievement){
+                    achivment.id = achievement.id;
                     achivment.edit = false;
                     achivment.loading = false;
                 });
@@ -125,6 +126,15 @@
                 }
                 achivment.rules.push({});
             }
+        }])
+        .directive('domainConfig', function () {
+            return {
+                restrict: 'C',
+                templateUrl: PARTIAL_URL + 'domain_config'
+            }
+        })
+        .controller('CodeInjectorController', ['route', function (route) {
+            this.domain_id = route['search']['domain_id'];
         }]);
 
     angular.module('achivesApp', ['loginModule', 'accountModule'])

@@ -8,6 +8,8 @@ class Api extends CI_Controller
         $this->load->library(array('ion_auth','form_validation'));
         //TODO добавить проверку авторизованности
         $this->user_id = $this->ion_auth->session->userdata('user_id');
+        header('Content-Type: application/json');
+        header('Access-Control-Allow-Origin: *');
     }
 
     public function domains($id = null)
@@ -84,8 +86,10 @@ class Api extends CI_Controller
                 'text' => $this->input->post('text'),
                 'domain_id' => $this->input->post('domain_id')
             );
-            $this->Achivment_model->save($id, $data);
-            $this->Achivment_rule_model->save_batch($id, $this->input->post('rules'));
+            $new_id = $this->Achivment_model->save($id, $data);
+            $achivment = $this->Achivment_model->get_by_id($new_id);
+            $this->Achivment_rule_model->save_batch($achivment->id, $this->input->post('rules'));
+            print json_encode($achivment);
         }
         if ($action == 'delete') {
             $params = array(
@@ -96,4 +100,29 @@ class Api extends CI_Controller
         }
     }
 
+    public function check($domain_id = null) {
+        //TODO проверить принадлежит ли домен юзеру
+        $this->load->model('Achivment_model');
+        $this->load->model('Visitor_model');
+
+        $url = parse_url($this->input->post('url'));
+        $session = $this->Visitor_model->get(array('session' => $this->input->post('session_id')));
+        $achieved = $this->Visitor_model->achived($domain_id, $session);
+        $data = array(
+            'url' => $url['path'] . (isset($url['query']) ? $url['query'] : ''),
+            'achieved' => $achieved
+        );
+
+        $achivments = $this->Achivment_model->get_by_rules($domain_id, $data);
+
+        $this->Visitor_model->achive($session, $achivments);
+
+        print json_encode($achivments);
+    }
+
+    public function create_session() {
+        $this->load->model('Visitor_model');
+        $session = $this->Visitor_model->create();
+        print $session['session_id'];
+    }
 }

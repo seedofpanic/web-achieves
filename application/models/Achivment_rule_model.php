@@ -12,20 +12,21 @@ class Achivment_rule_model extends CI_Model
 
     public function save_batch($achive_id, $rules)
     {
-        foreach ($rules as $rule) {
-            if ($rule['deleted'] > 0 || !($rule['type'] > 0))
-            {
-                if (isset($rule['id']) && $rule['id'] > 0) {
-                    $this->delete($rule['id']);
+        if (is_array($rules)) {
+            foreach ($rules as $rule) {
+                if (isset($rule['deleted']) && $rule['deleted'] > 0 || !($rule['type'] > 0)) {
+                    if (isset($rule['id']) && $rule['id'] > 0) {
+                        $this->delete($rule['id']);
+                    }
+                } else {
+                    $data = array(
+                        'achive_id' => $achive_id,
+                        'type' => isset($rule['type']) ? $rule['type'] : '',
+                        'data' => isset($rule['data']) ? $rule['data'] : ''
+                    );
+                    $id = isset($rule['id']) && $rule['id'] > 0 ? $rule['id'] : 0;
+                    $this->save($id, $data);
                 }
-            } else {
-                $data = array(
-                    'achive_id' => $achive_id,
-                    'type' => isset($rule['type']) ? $rule['type'] : '',
-                    'data' => isset($rule['data']) ? $rule['data'] : ''
-                );
-                $id = isset($rule['id']) && $rule['id'] > 0 ? $rule['id'] : 0;
-                $this->save($id, $data);
             }
         }
     }
