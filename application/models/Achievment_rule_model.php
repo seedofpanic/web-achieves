@@ -19,10 +19,15 @@ class Achievment_rule_model extends CI_Model
                         $this->delete($rule['id']);
                     }
                 } else {
+                    if (in_array($rule['type'], array('2'))) {
+                        $rule_data = json_encode(isset($rule['data2']) ? $rule['data2'] : '');
+                    } else {
+                        $rule_data = isset($rule['data']) ? $rule['data'] : '';
+                    }
                     $data = array(
                         'achieve_id' => $achieve_id,
                         'type' => isset($rule['type']) ? $rule['type'] : '',
-                        'data' => isset($rule['data']) ? $rule['data'] : ''
+                        'data' => $rule_data
                     );
                     $id = isset($rule['id']) && $rule['id'] > 0 ? $rule['id'] : 0;
                     $this->save($id, $data);

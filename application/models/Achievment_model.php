@@ -4,11 +4,16 @@ class Achievment_model extends CI_Model
 {
     public $rules = null;
 
+    public function get_by_ids($ids) {
+        if (count($ids) > 0) {
+            return $this->db->where_in('id', $ids)->get('achieves')->result();
+        } else {
+            return array();
+        }
+    }
+
     public function get_for_visitor($domain_id, $session) {
         $query = $this->db->join('achieve_rules', 'achieve_rules.achieve_id = achieves.id', 'inner')
-            ->where(array(
-                'achieve_rules.type' => 1
-            ))
             ->select('achieves.*');
         $query->select('EXISTS(SELECT id FROM visitor_achieves where achieve_id=achieves.id and visitor_id=' . $session->id . ') as achieved', false);
         $query = $this->db->get_where('achieves', array('domain_id' => $domain_id, 'deleted' => 0, 'active' => 1));
@@ -17,18 +22,42 @@ class Achievment_model extends CI_Model
     }
 
     public function get_by_rules($domain_id, $data) {
-        $query = $this->db->join('achieve_rules', 'achieve_rules.achieve_id = achieves.id', 'inner')
+        $query = $this->db->join('achieve_rules', 'achieve_rules.achieve_id = a.id', 'inner')
             ->where(array(
                 'achieve_rules.type' => 1,
                 'achieve_rules.data' => $data['url']
-            ))
-        ->select('achieves.*');
+            ));
         if (count($data['achieved']) > 0) {
-            $query->where_not_in('achieves.id', $data['achieved']);
+            $query->where_not_in('a.id', $data['achieved']);
         }
-        $query = $this->db->get_where('achieves', array('domain_id' => $domain_id, 'deleted' => 0, 'active' => 1));
+        $query = $this->db->select('a.id')->get_where('achieves a', array('domain_id' => $domain_id, 'deleted' => 0, 'active' => 1));
 
-        return $query->result();
+        return array_map(function ($item) {return $item->id;}, $query->result());
+    }
+
+    public function check_achieve_rule($domain_id, $visitor_id, $new_achieves) {
+        $to_achieve = array();
+        $this->db->select('va.achieve_id as id');
+        $this->db->where(array('visitor_id' => $visitor_id));
+        $this->db->where('EXISTS(SELECT id FROM achieves a WHERE domain_id=' . (int)$domain_id . ' and a.id=va.achieve_id)', '', false);
+        $achived = $this->db->get('visitor_achieves va')->result();
+        $achived = array_map(function ($item) {return $item->id;}, $achived);
+        $achived = array_merge($achived, array_diff($new_achieves, $achived));
+        foreach ($new_achieves as $achive_id) {
+            $rules = $this->db->where('EXISTS(SELECT a.id FROM achieves a WHERE domain_id=' . (int)$domain_id . ' and a.id=ar.achieve_id)', '', false)
+                ->where('type', '2')
+                ->where_not_in('achieve_id', $achived)
+                ->where('data like', "%\"" . (int)$achive_id . "\"%")
+                ->get('achieve_rules ar')
+                ->result();
+            foreach ($rules as $rule) {
+                $need_achieves = json_decode($rule->data);
+                if (count(array_diff($need_achieves, $achived)) == 0) {
+                    $to_achieve[$rule->achieve_id] = $rule->achieve_id;
+                }
+            }
+        }
+        return $to_achieve;
     }
 
     public function get_by_id($id)

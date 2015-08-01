@@ -40,7 +40,7 @@ class Visitor_model extends CI_Model
     public function achieve($session, $achieves) {
         foreach ($achieves as $achieve) {
             $data = array(
-                'achieve_id' => $achieve->id,
+                'achieve_id' => $achieve,
                 'visitor_id' => $session->id
             );
             $this->db->insert('visitor_achieves', $data);

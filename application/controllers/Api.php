@@ -154,11 +154,18 @@ class Api extends CI_Controller
 
         $achievments = $this->Achievment_model->get_by_rules($domain_id, $data);
 
+        $achieved = array_merge($achievments, array_diff($achieved, $achievments));
+        do {
+            $new_achieved = $this->Achievment_model->check_achieve_rule($domain_id, $session->id, $achieved);
+            $achievments = array_merge($achievments, array_diff($new_achieved, $achievments));
+            $achieved = array_merge($new_achieved, array_diff($achieved, $new_achieved));
+        } while (count($new_achieved) != 0);
+
         $this->Visitor_model->achieve($session, $achievments);
 
         $this->Visitor_model->link($domain_id, $session->id);
 
-        print json_encode($achievments);
+        print json_encode($this->Achievment_model->get_by_ids($achievments));
     }
 
     public function create_session() {

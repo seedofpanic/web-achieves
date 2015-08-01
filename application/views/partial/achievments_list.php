@@ -65,10 +65,10 @@
                                         <div class="field" ng-class="{disabled:rule.deleted>0}">
                                             <label>Достижение</label>
                                             <table class="ui table">
-                                                <tr ng-repeat="rule_achiev in rule.data2">
+                                                <tr ng-repeat="(id, rule_achiev) in rule.data2">
                                                     <td>
-                                                        <select ng-model="rule_achiev" ng-disabled="rule.deleted>0">
-                                                            <option ng-repeat="ra in ac.achievments" value="{{ra.id}}">{{ra.name}}</option>
+                                                        <select ng-model="rule.data2[id]" ng-disabled="rule.deleted>0">
+                                                            <option ng-repeat="ra in ac.achievments" value="{{ra.id}}" ng-selected="rule.data2[id]==ra.id">{{ra.name}}</option>
                                                         </select>
                                                     </td>
                                                     <td class="collapsing">

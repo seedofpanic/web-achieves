@@ -143,6 +143,11 @@
                 achievments.forEach(function (achievment) {
                     that.achievments.push(achievment);
                     achievment.active = achievment.active > 0 ? true : false;
+                    achievment.rules.forEach(function (rule) {
+                        if (rule.type == 2) {
+                            rule.data2 = JSON.parse(rule.data);
+                        }
+                    });
                     $scope.$watch(function () {
                         return achievment.active;
                     }, function (activate, oldValue) {
