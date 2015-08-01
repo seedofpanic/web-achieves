@@ -16,6 +16,10 @@ class Visitor_model extends CI_Model
         }
     }
 
+    public function link($domain_id, $visitor_id){
+        $this->db->query("INSERT IGNORE INTO visitor_domains SET `domain_id`='" . (int)$domain_id . "', `visitor_id`='" . (int)$visitor_id . "'");
+    }
+
     public function create() {
         while (true) {
             $session_id = hash('sha256', rand());

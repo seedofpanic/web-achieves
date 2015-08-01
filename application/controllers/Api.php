@@ -34,6 +34,18 @@ class Api extends CI_Controller
     public function domain($id = null, $action = null)
     {
         $this->load->model('Domain_model');
+        if ($action == 'statistics') {
+            $this->load->model('Achievment_model');
+            $data = $this->Domain_model->statistic($id);
+            $statistic = array(
+                'vals' => array(
+                    array('name' => 'Поситителей зарегистрировано', 'data' => $data['totals'])
+                )
+            );
+            $statistic['totals'] = $data['totals'];
+            $statistic['achieves'] = $this->Achievment_model->statistic($id);
+            print json_encode($statistic);
+        }
         if ($action == 'new') {
             $this->form_validation->set_rules('name', 'error', 'required');
             if ($this->form_validation->run() == true) {
@@ -143,6 +155,8 @@ class Api extends CI_Controller
         $achievments = $this->Achievment_model->get_by_rules($domain_id, $data);
 
         $this->Visitor_model->achieve($session, $achievments);
+
+        $this->Visitor_model->link($domain_id, $session->id);
 
         print json_encode($achievments);
     }

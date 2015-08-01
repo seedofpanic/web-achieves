@@ -26,6 +26,11 @@ class Domain_model extends CI_Model
         return $passed;
     }
 
+    public function statistic($domain_id) {
+        $totals = $this->db->where(array('domain_id' => $domain_id))->count_all('visitor_domains');
+        return array('totals' => $totals);
+    }
+
     public function create($data) {
         if ($this->check($data)) {
             $this->db->insert('domains', $data);

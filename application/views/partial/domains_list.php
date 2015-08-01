@@ -5,7 +5,10 @@
     <div class="messages"></div>
     <table class="ui table">
         <tr class="domains ui link list" ng-repeat="domain in dc.domains">
-            <td><a class="domain item" href="?action=achievments&domain_id={{domain.id}}">{{domain.name}}</a></td>
+            <td><a class="domain" href="?action=achievments&domain_id={{domain.id}}">{{domain.name}}</a></td>
+            <td class="collapsing">
+                <a type="button" href="?action=statistics&domain_id={{domain.id}}" class="ui button black icon" title="Статистика"><i class="icon signal"></i></a>
+            </td>
             <td class="collapsing">
                 <a type="button" href="?action=achievments&domain_id={{domain.id}}" class="ui button orange icon" title="Редактировать достижения"><i class="icon edit"></i></a>
             </td>
@@ -20,7 +23,7 @@
     </table>
     <form class="ui form">
         <div class="ui right action input">
-            <input type="text" ng-model="dc.name"/>
+            <input type="text" ng-model="dc.name" placeholder="Впишите имя вашего домена, например google.com"/>
             <button type="submit" class="ui button right attached floated primary labeled icon" ng-click="dc.add()">
                 <i class="privacy icon"></i>Добавить домен</button>
         </div>

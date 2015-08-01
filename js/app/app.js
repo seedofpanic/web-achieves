@@ -205,7 +205,13 @@
                     achievment.rules = [];
                 }
                 achievment.rules.push({});
-            }
+            };
+            this.addData2 = function (rule) {
+                if (!rule.data2) {
+                    rule.data2 = [];
+                }
+                rule.data2.push({});
+            };
         }])
         .directive('domainConfig', function () {
             return {
@@ -215,6 +221,19 @@
         })
         .controller('CodeInjectorController', ['route', function (route) {
             this.domain_id = route['search']['domain_id'];
+        }])
+        .directive('domainStatistics', function () {
+            return {
+                restrict: 'C',
+                templateUrl: PARTIAL_URL + 'domain_statistics'
+            }
+        })
+        .controller('domainStatisticController', ['$http', 'route', function ($http, route) {
+            var that = this;
+            this.domain_id = route['search']['domain_id'];
+            $http.get(API_URL + 'domain/' + that.domain_id + '/statistics').success(function (statistic) {
+                that.statistic = statistic;
+            });
         }]);
 
     angular.module('UITools', [])

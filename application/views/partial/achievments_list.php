@@ -51,6 +51,7 @@
                                     <label>Тип</label>
                                     <select ng-model="rule.type" ng-disabled="rule.deleted>0">
                                         <option value="1">Заход на страницу</option>
+                                        <option value="2">Выполнить другие достижения (В разработке)</option>
                                     </select>
                                 </div>
                                 <div ng-switch on="rule.type">
@@ -58,6 +59,28 @@
                                         <div class="field" ng-class="{disabled:rule.deleted>0}">
                                             <label>Ссылка</label>
                                             <input type="text" ng-model="rule.data" ng-disabled="rule.deleted>0"/>
+                                        </div>
+                                    </div>
+                                    <div ng-switch-when="2">
+                                        <div class="field" ng-class="{disabled:rule.deleted>0}">
+                                            <label>Достижение</label>
+                                            <table class="ui table">
+                                                <tr ng-repeat="rule_achiev in rule.data2">
+                                                    <td>
+                                                        <select ng-model="rule_achiev" ng-disabled="rule.deleted>0">
+                                                            <option ng-repeat="ra in ac.achievments" value="{{ra.id}}">{{ra.name}}</option>
+                                                        </select>
+                                                    </td>
+                                                    <td class="collapsing">
+                                                        <button class="ui button icon red" ng-click="rule.data2.remove(ra)"><i class="icon close"></i></button>
+                                                    </td>
+                                                </tr>
+                                                <tr ng-hide="rule.data2.length>0">
+                                                    <td><div class="ui message info">Добавьте достижения, которые надо выполнить для получения данного</div></td>
+                                                </tr>
+                                            </table>
+                                            <button class="ui button right floated" ng-click="rc.addData2(rule)">Добавить</button>
+                                            <div class="clear"></div>
                                         </div>
                                     </div>
                                 </div>

@@ -45,6 +45,12 @@ class Achievment_model extends CI_Model
         return $query->result();
     }
 
+    public function statistic($domain_id) {
+        $this->db->select('a.*,(SELECT count(id) FROM visitor_achieves va WHERE va.achieve_id=a.id) as totals', false);
+        $query = $this->db->get_where('achieves a', array('domain_id' => $domain_id, 'deleted' => 0));
+        return $query->result();
+    }
+
     public function save($id, $data)
     {
         if ($id > 0) {
