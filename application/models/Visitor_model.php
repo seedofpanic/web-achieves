@@ -33,20 +33,20 @@ class Visitor_model extends CI_Model
         $this->db->update('visitors', $data, array('id' => $id));
     }
 
-    public function achive($session, $achives) {
-        foreach ($achives as $achive) {
+    public function achieve($session, $achieves) {
+        foreach ($achieves as $achieve) {
             $data = array(
-                'achive_id' => $achive->id,
+                'achieve_id' => $achieve->id,
                 'visitor_id' => $session->id
             );
-            $this->db->insert('visitor_achives', $data);
+            $this->db->insert('visitor_achieves', $data);
         }
     }
 
-    public function achived($domain_id, $session){
+    public function achieved($domain_id, $session){
         $query = $this->db->select('a.id')
-            ->join('visitor_achives va', 'visitor_id=' . $session->id . ' and va.achive_id=a.id', 'inner')
-        ->get_where('achives a', array('domain_id', $domain_id));
+            ->join('visitor_achieves va', 'visitor_id=' . $session->id . ' and va.achieve_id=a.id', 'inner')
+        ->get_where('achieves a', array('domain_id', $domain_id));
         return array_map(function ($item) {
             return $item->id;
         },$query->result());

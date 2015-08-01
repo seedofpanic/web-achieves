@@ -11,10 +11,27 @@ body {
 .login-page>div {
     height: 100%;
 }
-body>.container {
+body>div>.container {
     min-height: 300px;
     margin-top: 40px;
 }
 .clear {
     clear: both;
+}
+.segment .content .description {
+    padding-bottom: 30px;
+}
+.segment .content {
+    position: relative;
+}
+.achieve .checkbox.active {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+/*.achieve .checkbox.active label {
+    width: 135px;
+}*/
+.ui.toggle.checkbox label {
+    color: rgba(0,0,0,.4);
 }

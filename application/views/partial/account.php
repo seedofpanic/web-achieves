@@ -1,7 +1,7 @@
 <div class="ui fixed inverted menu">
     <div class="ui container">
         <div href="#" class="header item">
-            Achivments
+            WebAchievments
         </div>
 
         <a href="/index.php/auth/logout" class="item right">Выход</a>
@@ -12,7 +12,7 @@
     <div ng-controller="accountController as ac">
         <div ng-switch on="ac.action">
             <div ng-switch-when="domains" class="domains-list"></div>
-            <div ng-switch-when="achivments" class="achivments-list"></div>
+            <div ng-switch-when="achievments" class="achievments-list"></div>
             <div ng-switch-when="domain" class="domain-config"></div>
         </div>
     </div>

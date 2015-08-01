@@ -1,16 +1,16 @@
 
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Achivment_rule_model extends CI_Model
+class Achievment_rule_model extends CI_Model
 {
-    public function get_by_achive($achive_id, $limit = 0, $offset = 0)
+    public function get_by_achieve($achieve_id, $limit = 0, $offset = 0)
     {
-        $query = $this->db->get_where('achive_rules', array('achive_id' => $achive_id), $limit, $offset);
+        $query = $this->db->get_where('achieve_rules', array('achieve_id' => $achieve_id), $limit, $offset);
 
         return $query->result();
     }
 
-    public function save_batch($achive_id, $rules)
+    public function save_batch($achieve_id, $rules)
     {
         if (is_array($rules)) {
             foreach ($rules as $rule) {
@@ -20,7 +20,7 @@ class Achivment_rule_model extends CI_Model
                     }
                 } else {
                     $data = array(
-                        'achive_id' => $achive_id,
+                        'achieve_id' => $achieve_id,
                         'type' => isset($rule['type']) ? $rule['type'] : '',
                         'data' => isset($rule['data']) ? $rule['data'] : ''
                     );
@@ -33,19 +33,19 @@ class Achivment_rule_model extends CI_Model
 
     public function delete($id)
     {
-        $this->db->delete('achive_rules', array('id' => $id));
+        $this->db->delete('achieve_rules', array('id' => $id));
     }
 
     public function save($id, $data)
     {
         if ($id > 0) {
-            $this->db->update('achive_rules', $data, array('id' => $id));
+            $this->db->update('achieve_rules', $data, array('id' => $id));
         } else {
-            $this->db->insert('achive_rules', $data);
+            $this->db->insert('achieve_rules', $data);
         }
     }
 
     public function update($id, $data) {
-        $this->db->update('achive_rules', $data, array('id' => $id));
+        $this->db->update('achieve_rules', $data, array('id' => $id));
     }
 }

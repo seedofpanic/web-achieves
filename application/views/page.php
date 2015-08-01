@@ -1,10 +1,10 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?><!DOCTYPE html>
-<html lang="en" ng-app="achivesApp">
+<html lang="en" ng-app="achievesApp">
 <head>
 	<meta charset="utf-8">
-	<title>Achivments - Administration</title>
+	<title>Achievments - Administration</title>
     <link rel="stylesheet" type="text/css" href="/css/semantic.min.css">
     <link rel="stylesheet" type="text/css" href="/css/style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>

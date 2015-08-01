@@ -1,4 +1,4 @@
-<div ng-controller="achivmentsController as ac" class="ui segment bottom attached">
+<div ng-controller="achievmentsController as ac" class="ui segment bottom attached">
     <div class="ui huge breadcrumb">
         <a class="section" href="/">Домены</a>
         <i class="right chevron icon divider"></i>
@@ -10,7 +10,7 @@
 &lt;script type="application/javascript" src="http://mobmind.ru/js/WebAchieves.js"&gt;&lt;/script&gt;
 &lt;script&gt;
     $(function () {
-		var wa = new WebAchives({
+		var wa = new WebAchieves({
 			domain_id: {{cic.domain_id}}
 		});
 	});

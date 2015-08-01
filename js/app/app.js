@@ -1,4 +1,22 @@
 {
+    $.copy = function(target, source) {
+        if (typeof target != 'object') {
+            target = {};
+        }
+        if (typeof source != 'object') {
+            return;
+        }
+        var rex = new RegExp('^\\$');
+        $.each(source, function (key, val) {
+            if (rex.test(key)) {return}
+            if (typeof val == 'object' && !val.forEach) {
+                $.copy(target[key], source[key]);
+            } else {
+                console.log(key);
+                target[key] = val;
+            }
+        });
+    };
     Array.prototype.remove = function (item) {
         this.splice(this.indexOf(item), 1);
     };
@@ -52,6 +70,12 @@
                 templateUrl: PARTIAL_URL + 'domains_list'
             }
         })
+        .directive('messages', function () {
+            return {
+                restrict: 'C',
+                template: '<div ng-repeat="error in messages"><div class="ui message" ng-class="{error: error.type==\'error\',info: error.type==\'info\',success: error.type==\'success\'}">{{error.msg}}</div></div>'
+            }
+        })
         .controller('domainsController', ['$http', '$scope', function ($http, $scope) {
             var that = this;
             that.domains = [];
@@ -60,14 +84,35 @@
             });
             this.add = function () {
                 var data = {};
-                if (this.name) {
-                    data['name'] = this.name;
-                    $http.post(API_URL + 'domain/0/new', $.param(data)).success(function (domain) {
-                        if (domain['id'] > 0) {
-                            that.domains.push(domain);
+                if (!this.name) {
+                    $scope.messages = [
+                        {
+                            msg: 'Введите имя домена, например: google.com',
+                            type: 'error'
                         }
-                    });
+                    ];
+                    return;
                 }
+                data['name'] = this.name;
+                $http.post(API_URL + 'domain/0/new', $.param(data)).success(function (domain) {
+                    if (domain['id'] > 0) {
+                        that.domains.push(domain);
+                    }
+                    $scope.messages = [
+                        {
+                            msg: 'Домен успешно добавлен',
+                            type: 'success'
+                        }
+                    ];
+                }).error(function (msg) {
+                    console.log(msg);
+                    $scope.messages = [
+                        {
+                            msg: msg,
+                            type: 'error'
+                        }
+                    ];
+                });
             };
             this.update = function (domain) {
                 $http.post(API_URL + 'domain/update', $.param(domain)).success(function (domain) {})
@@ -83,48 +128,83 @@
                 });
             }
         }])
-        .directive('achivmentsList', function () {
+        .directive('achievmentsList', function () {
             return {
                 restrict: 'C',
-                templateUrl: PARTIAL_URL + 'achivments_list'
+                templateUrl: PARTIAL_URL + 'achievments_list'
             }
         })
-        .controller('achivmentsController', ['$http', 'route', function ($http, route) {
+        .controller('achievmentsController', ['$http', 'route', '$scope', function ($http, route, $scope) {
             var that = this;
-            that.achivments = [];
-            $http.get(API_URL + 'achivments/' + route['search']['domain_id']).success(function (achivments) {
-                that.achivments = achivments;
-            });
-            this.add = function () {
-                that.achivments.push({name: 'Новое достижение', edit: true, domain_id: route['search']['domain_id']})
-            };
-            this.save = function (achivment) {
-                if (achivment.loading) {return}
-                achivment.loading = true;
-                var id = achivment.id ? achivment.id : 0;
-                $http.post(API_URL + 'achivment/' + id  + '/save', $.param(achivment)).success(function (achievement){
-                    achivment.id = achievement.id;
-                    achivment.edit = false;
-                    achivment.loading = false;
+            var edit_cache = [];
+            that.achievments = [];
+            $http.get(API_URL + 'achievments/' + route['search']['domain_id']).success(function (achievments) {
+                that.achievments = [];
+                achievments.forEach(function (achievment) {
+                    that.achievments.push(achievment);
+                    achievment.active = achievment.active > 0 ? true : false;
+                    $scope.$watch(function () {
+                        return achievment.active;
+                    }, function (activate, oldValue) {
+                        if (activate !== oldValue) {
+                            that.activate(achievment);
+                        }
+                    });
                 });
+            });
+            this.activate = function (achievment) {
+                $http.post(API_URL + 'achievment/' + achievment.id + '/activate', $.param({activate: achievment.active}));
             };
-            this.remove = function (achivment) {
-                if (achivment.loading) {return}
-                var deleted = achivment.deleted > 0 ? '0' : '1';
-                if (achivment.deleted === '0' && !confirm('Действительно хотите удалить?')) {return;}
-                achivment.loading = true;
-                $http.post(API_URL + 'achivment/' + achivment.id + '/delete', $.param({deleted: deleted})).success(function () {
-                    achivment.deleted = deleted;
-                    achivment.loading = false;
+            this.add = function () {
+                that.achievments.push({name: 'Новое достижение', edit: true, domain_id: route['search']['domain_id']})
+            };
+            this.save = function (achievment) {
+                if (achievment.loading) {return}
+                achievment.loading = true;
+                var id = achievment.id ? achievment.id : 0;
+                $http.post(API_URL + 'achievment/' + id  + '/save', $.param(achievment)).success(function (achievement){
+                    achievment.id = achievement.id;
+                    achievment.edit = false;
+                    achievment.loading = false;
+                });
+                if (achievment.rules) {
+                    $.each(achievment.rules, function (key, item) {
+                        if (item.deleted > 0) {
+                            achievment.rules.remove(item);
+                        }
+                    });
+                }
+            };
+            this.revert = function (achievment) {
+                if (achievment.id > 0) {
+                    $.copy(achievment, edit_cache[achievment.id]);
+                    achievment.edit = 0
+                } else {
+                    that.achievments.remove(achievment);
+                }
+            };
+            this.edit = function (achievment) {
+                edit_cache[achievment.id] = {};
+                edit_cache[achievment.id] = $.extend(true, {}, achievment);
+                achievment.edit = 1;
+            };
+            this.remove = function (achievment) {
+                if (achievment.loading) {return}
+                var deleted = achievment.deleted > 0 ? '0' : '1';
+                if (deleted === '1' && !confirm('Действительно хотите удалить?')) {return;}
+                achievment.loading = true;
+                $http.post(API_URL + 'achievment/' + achievment.id + '/delete', $.param({deleted: deleted})).success(function () {
+                    achievment.deleted = deleted;
+                    achievment.loading = false;
                 });
             }
         }])
         .controller('RulesController', ['$http', function ($http) {
-            this.add = function (achivment) {
-                if (!achivment.rules) {
-                    achivment.rules = [];
+            this.add = function (achievment) {
+                if (!achievment.rules) {
+                    achievment.rules = [];
                 }
-                achivment.rules.push({});
+                achievment.rules.push({});
             }
         }])
         .directive('domainConfig', function () {
@@ -137,7 +217,32 @@
             this.domain_id = route['search']['domain_id'];
         }]);
 
-    angular.module('achivesApp', ['loginModule', 'accountModule'])
+    angular.module('UITools', [])
+    .directive('checkbox', function () {
+        return {
+            require:"ngModel",
+            restrict: 'C',
+            template: '<input type="checkbox" class="hidden"/><label ng-click="switch()">{{text}}<span ng-hide="on">{{offText}}</span><span ng-show="on">{{onText}}</span></label>',
+            link: function (scope, element, attrs, ngModel) {
+                var input = element.find('input');
+                scope.text = attrs.text;
+                scope.offText = attrs.offtext;
+                scope.onText = attrs.ontext;
+                scope.switch = function () {
+                    ngModel.$setViewValue(!ngModel.$modelValue);
+                };
+                scope.$watch(function(){
+                    return ngModel.$modelValue;
+                }, function(modelValue){
+                    scope.on = modelValue;
+                    element.toggleClass('checked', modelValue);
+                    input[0].checked = modelValue;
+                });
+            }
+        }
+    });
+
+    angular.module('achievesApp', ['loginModule', 'accountModule', 'UITools'])
         .run(function ($http){
             $http.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded";
         });
