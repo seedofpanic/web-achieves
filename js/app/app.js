@@ -64,14 +64,15 @@
         this.send = function () {
             if (this.loading) {return}
             this.loading = true;
-            $http.post(AUTH_URL + 'register', $.param(
+            $http.post(AUTH_URL + 'create_user', $.param(
                 {
                     first_name: this.first_name,
                     last_name: this.last_name,
                     email: this.email,
                     password: this.password,
                     password_confirm: this.password_confirm,
-                    submit: 'Register'
+                    submit: 'Register',
+                    force_login: true
                 }
             )).success(
                 function () {

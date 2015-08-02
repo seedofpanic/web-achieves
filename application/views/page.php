@@ -13,7 +13,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <script type="text/javascript" src="/js/semantic.min.js"></script>
     <!-- BEGIN JIVOSITE CODE {literal} -->
     <script type='text/javascript'>
-        (function(){ var widget_id = '7JBhzYHd1K';
+        (function(){ var widget_id = 'az0ymhSuVz';
             var s = document.createElement('script'); s.type = 'text/javascript'; s.async = true; s.src = '//code.jivosite.com/script/widget/'+widget_id; var ss = document.getElementsByTagName('script')[0]; ss.parentNode.insertBefore(s, ss);})();</script>
     <!-- {/literal} END JIVOSITE CODE -->
 </head>
