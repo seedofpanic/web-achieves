@@ -6,8 +6,8 @@
     </div>
     <div class="ui segment">
         <pre ng-controller="CodeInjectorController as cic">
-&lt;link rel="stylesheet" type="text/css" href="http://mobmind.ru/css/WebAchieves.css"&gt;
-&lt;script type="application/javascript" src="http://mobmind.ru/js/WebAchieves.js"&gt;&lt;/script&gt;
+&lt;link rel="stylesheet" type="text/css" href="http://webachievs.ru/css/WebAchieves.css"&gt;
+&lt;script type="application/javascript" src="http://webachievs.ru/js/WebAchieves.js"&gt;&lt;/script&gt;
 &lt;script&gt;
     $(function () {
 		var wa = new WebAchieves({

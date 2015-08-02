@@ -24,26 +24,7 @@
     var AUTH_URL = '/index.php/auth/';
     var API_URL = '/index.php/api/';
 
-    angular.module('loginModule', [])
-    .directive('loginPage', function (){
-        return {
-            restrict: 'C',
-            templateUrl: PARTIAL_URL + 'login'
-        }
-    })
-    .controller('loginForm', ['$http', function ($http) {
-        this.send = function () {
-            if (this.loading) {return}
-            this.loading = true;
-            $http.post(AUTH_URL + 'login', $.param({identity: this.email, password: this.password, submit: 'Login'})).success(
-                function () {
-                    window.location = '/?action=domains';
-                }
-            );
-        }
-    }]);
-
-    angular.module('accountModule', [])
+    angular.module('tools', [])
         .factory('route', function () {
             var data = [];
             var tmp = window.location.search.slice(1).split('&');
@@ -54,7 +35,53 @@
             });
             data['search'] = search;
             return data;
-        })
+        });
+
+    angular.module('loginModule', ['tools'])
+    .directive('loginPage', ['route', function (route){
+        return {
+            restrict: 'C',
+            templateUrl: PARTIAL_URL + 'login',
+            link: function (scope) {
+                if (route.search.action == 'register') {
+                    scope.register = true;
+                }
+            }
+        }
+    }])
+    .controller('loginForm', ['$http', function ($http) {
+        this.send = function () {
+            if (this.loading) {return}
+            this.loading = true;
+            $http.post(AUTH_URL + 'login', $.param({identity: this.email, password: this.password, submit: 'Login'})).success(
+                function () {
+                    window.location = '/?action=domains';
+                }
+            );
+        }
+    }])
+    .controller('registerForm', ['$http', function ($http) {
+        this.send = function () {
+            if (this.loading) {return}
+            this.loading = true;
+            $http.post(AUTH_URL + 'register', $.param(
+                {
+                    first_name: this.first_name,
+                    last_name: this.last_name,
+                    email: this.email,
+                    password: this.password,
+                    password_confirm: this.password_confirm,
+                    submit: 'Register'
+                }
+            )).success(
+                function () {
+                    window.location = '/?action=domains';
+                }
+            );
+        }
+    }]);
+
+    angular.module('accountModule', ['tools'])
         .controller('accountController', ['route', '$scope', '$element', function (route, $scope, $element) {
             this.action = route['search']['action'] ? route['search']['action'] : 'domains';
         }])

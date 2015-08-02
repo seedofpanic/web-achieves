@@ -17,7 +17,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | environments.
 |
 */
-$config['base_url'] = 'http://mobmind.ru/';
+$config['base_url'] = 'http://webachievs.ru/';
 
 /*
 |--------------------------------------------------------------------------
