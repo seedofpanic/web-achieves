@@ -139,6 +139,27 @@ class Api extends CI_Controller
         }
     }
 
+    public function timeout($achieve_id = null) {
+        //TODO проверить принадлежит ли домен юзеру
+        $this->load->model('Achievment_model');
+        $this->load->model('Visitor_model');
+
+        $url = parse_url($this->input->post('url'));
+        $session = $this->Visitor_model->get(array('session' => $this->input->post('session_id')));
+        $achieve = $this->Achievment_model->get_by_id($achieve_id);
+        $achieved = $this->Visitor_model->achieved($achieve->domain_id, $session);
+        $data = array(
+            'url' => $url['path']
+                . (isset($url['query']) ? '?' . $url['query'] : '')
+                . (isset($url['fragment']) ? '#' . $url['fragment'] : ''),
+            'achieved' => $achieved
+        );
+
+        $achievments = array($achieve_id);
+
+        $this->doAchieve($achievments, $achieved, $achieve->domain_id, $session, $data);
+    }
+
     public function check($domain_id = null) {
         //TODO проверить принадлежит ли домен юзеру
         $this->load->model('Achievment_model');
@@ -148,12 +169,18 @@ class Api extends CI_Controller
         $session = $this->Visitor_model->get(array('session' => $this->input->post('session_id')));
         $achieved = $this->Visitor_model->achieved($domain_id, $session);
         $data = array(
-            'url' => $url['path'] . (isset($url['query']) ? $url['query'] : ''),
+            'url' => $url['path']
+                . (isset($url['query']) ? '?' . $url['query'] : '')
+                . (isset($url['fragment']) ? '#' . $url['fragment'] : ''),
             'achieved' => $achieved
         );
 
         $achievments = $this->Achievment_model->get_by_rules($domain_id, $data);
 
+        $this->doAchieve($achievments, $achieved, $domain_id, $session, $data);
+    }
+
+    private function doAchieve($achievments, $achieved, $domain_id, $session, $data) {
         $achieved = array_merge($achievments, array_diff($achieved, $achievments));
         do {
             $new_achieved = $this->Achievment_model->check_achieve_rule($domain_id, $session->id, $achieved);
@@ -165,7 +192,15 @@ class Api extends CI_Controller
 
         $this->Visitor_model->link($domain_id, $session->id);
 
-        print json_encode($this->Achievment_model->get_by_ids($achievments));
+        $data['achieved'] = $achieved;
+
+        $timers = $this->Achievment_model->get_timer_rules($domain_id, $data);
+
+        $result = array(
+            'achieved' => $this->Achievment_model->get_by_ids($achievments),
+            'timers'   => $timers
+        );
+        print json_encode($result);
     }
 
     public function create_session() {

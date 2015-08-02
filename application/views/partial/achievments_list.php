@@ -51,7 +51,8 @@
                                     <label>Тип</label>
                                     <select ng-model="rule.type" ng-disabled="rule.deleted>0">
                                         <option value="1">Заход на страницу</option>
-                                        <option value="2">Выполнить другие достижения (В разработке)</option>
+                                        <option value="2">Выполнить другие достижения</option>
+                                        <option value="3">Таймаут</option>
                                     </select>
                                 </div>
                                 <div ng-switch on="rule.type">
@@ -81,6 +82,29 @@
                                             </table>
                                             <button class="ui button right floated" ng-click="rc.addData2(rule)">Добавить</button>
                                             <div class="clear"></div>
+                                        </div>
+                                    </div>
+                                    <div ng-switch-when="3">
+                                        <div class="field" ng-class="{disabled:rule.deleted>0}">
+                                            <label>Ссылка</label>
+                                            <input type="text" ng-model="rule.data" ng-disabled="rule.deleted>0"/>
+                                        </div>
+                                        <div class="field" ng-class="{disabled:rule.deleted>0}">
+                                            <label>Время</label>
+                                            <div class="fields four">
+                                                <div class="field one">
+                                                    <label>Минуты:</label>
+                                                </div>
+                                                <div class="field">
+                                                    <input type="text" ng-model="rule.data3.min" ng-disabled="rule.deleted>0"/>
+                                                </div>
+                                                <div class="field one">
+                                                    <label>Секунды:</label>
+                                                </div>
+                                                <div class="field">
+                                                    <input type="text" ng-model="rule.data3.sec" ng-disabled="rule.deleted>0"/>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

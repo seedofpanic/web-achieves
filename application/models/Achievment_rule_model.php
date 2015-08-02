@@ -1,4 +1,3 @@
-
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class Achievment_rule_model extends CI_Model
@@ -10,6 +9,13 @@ class Achievment_rule_model extends CI_Model
         return $query->result();
     }
 
+    public function parseLink($link) {
+        $url = parse_url($link);
+        return $url['path']
+        . (isset($url['query']) ? '?' . $url['query'] : '')
+        . (isset($url['fragment']) ? '#' . $url['fragment'] : '');
+    }
+
     public function save_batch($achieve_id, $rules)
     {
         if (is_array($rules)) {
@@ -19,8 +25,13 @@ class Achievment_rule_model extends CI_Model
                         $this->delete($rule['id']);
                     }
                 } else {
-                    if (in_array($rule['type'], array('2'))) {
+                    $rule['data'] = $this->parseLink($rule['data']);
+                    if ($rule['type'] == '2') {
                         $rule_data = json_encode(isset($rule['data2']) ? $rule['data2'] : '');
+                    } else if ($rule['type'] == '3') {
+                        $rule_data = $rule['data'] . '::' . json_encode(
+                            isset($rule['data3']) ? $rule['data3'] : ''
+                        );
                     } else {
                         $rule_data = isset($rule['data']) ? $rule['data'] : '';
                     }

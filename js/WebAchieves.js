@@ -62,12 +62,34 @@ var WebAchieves = function (params) {
             data: {url: window.location.href, session_id: that.session},
             dataType: 'json',
             success: function (data) {
-                that.achievesBox.html('');
-                $.each(data, function (key, val) {
-                    that.showAchieve(val);
-                });
+                that.parseAchieves(data);
             },
             error: function (data) {
+            }
+        });
+    };
+    this.parseAchieves = function (data) {
+        that.achievesBox.html('');
+        $.each(data.achieved, function (key, val) {
+            that.showAchieve(val);
+        });
+        $.each(data.timers, function (key, val) {
+            var data = val.data.split('::');
+            delay = JSON.parse(data[1]);
+            setTimeout(function () {
+                    that.claimTimeoutAchieve(val)
+                }, ((delay.min ? delay.min : 0) * 60 + (delay.sec ? delay.sec : 0)) * 1000
+            );
+        });
+    };
+    this.claimTimeoutAchieve = function (achieve) {
+        $.ajax({
+           url: DOMAIN + 'api/timeout/' + achieve.id,
+            type: 'post',
+            dataType: 'json',
+            data: {session_id: that.session},
+            success: function (data) {
+                that.parseAchieves(data);
             }
         });
     };

@@ -146,6 +146,12 @@
                     achievment.rules.forEach(function (rule) {
                         if (rule.type == 2) {
                             rule.data2 = JSON.parse(rule.data);
+                            rule.data = '';
+                        }
+                        if (rule.type == 3) {
+                            var rdata = rule.data.split('::');
+                            rule.data3 = JSON.parse(rdata[1]);
+                            rule.data = rdata[0];
                         }
                     });
                     $scope.$watch(function () {
