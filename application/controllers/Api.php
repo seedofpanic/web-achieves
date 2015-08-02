@@ -12,6 +12,17 @@ class Api extends CI_Controller
         header('Access-Control-Allow-Origin: *');
     }
 
+    private function check_access($user_id, $domain_id = null, $achieve_id = null) {
+        if ($domain_id != null) {
+            $this->load->model('Domain_model');
+            return $this->Domain_model->check_access($user_id, $domain_id);
+        }
+        if ($achieve_id != null) {
+            $this->load->model('Achievment_model');
+            return $this->Achievment_model->check_access($user_id, $achieve_id);
+        }
+    }
+
     public function domains($id = null)
     {
         $this->load->model('Domain_model');
@@ -33,6 +44,10 @@ class Api extends CI_Controller
 
     public function domain($id = null, $action = null)
     {
+        if (!$this->check_access($this->user_id, $id)) {
+            print '{}';
+            return;
+        }
         $this->load->model('Domain_model');
         if ($action == 'statistics') {
             $this->load->model('Achievment_model');
@@ -45,6 +60,10 @@ class Api extends CI_Controller
             $statistic['totals'] = $data['totals'];
             $statistic['achieves'] = $this->Achievment_model->statistic($id);
             print json_encode($statistic);
+        }
+        if ($action == 'get') {
+            $domain = $this->Domain_model->get_by_id($id);
+            print json_encode($domain);
         }
         if ($action == 'new') {
             $this->form_validation->set_rules('name', 'error', 'required');
@@ -93,7 +112,11 @@ class Api extends CI_Controller
 
     public function achievments($id, $offset = 0)
     {
-        //TODO проверить принадлежит ли домен юзеру
+        if (!$this->check_access($this->user_id, $id)) {
+            print '[]';
+            return;
+        }
+
         $this->load->model('Achievment_model');
         $this->load->model('Achievment_rule_model');
 
@@ -107,6 +130,10 @@ class Api extends CI_Controller
     }
 
     public function achievment($id, $action) {
+        if (!$this->check_access($this->user_id, null, $id)) {
+            print '[]';
+            return;
+        }
         $this->load->model('Achievment_model');
         $this->load->model('Achievment_rule_model');
         if ($action == 'activate') {

@@ -35,3 +35,6 @@ body>div>.container {
 .ui.toggle.checkbox label {
     color: rgba(0,0,0,.4);
 }
+.protected:not(.show) {
+    display: none;
+}

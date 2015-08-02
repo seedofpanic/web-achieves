@@ -156,12 +156,17 @@
                 });
             }
         }])
-        .directive('achievmentsList', function () {
+        .directive('achievmentsList', ['route', '$http', function (route, $http) {
             return {
                 restrict: 'C',
-                templateUrl: PARTIAL_URL + 'achievments_list'
+                templateUrl: PARTIAL_URL + 'achievments_list',
+                link: function (scope) {
+                    $http.get(API_URL + 'domain/' + route.search.domain_id + '/get').success(function (domain) {
+                        scope.domain = domain;
+                    });
+                }
             }
-        })
+        }])
         .controller('achievmentsController', ['$http', 'route', '$scope', function ($http, route, $scope) {
             var that = this;
             var edit_cache = [];

@@ -2,6 +2,11 @@
 
 class Domain_model extends CI_Model
 {
+    public function check_access($user_id, $domain_id) {
+        $query = $this->db->get_where('domains', array('user_id' => $user_id, 'id' => $domain_id, 'deleted' => 0));
+        return (count($query->result()) > 0) ? true : false;
+    }
+
     public function get_by_user($user_id, $limit = 0, $offset = 0) {
         $query = $this->db->get_where('domains', array('user_id' => $user_id, 'deleted' => 0), $limit, $offset);
 
