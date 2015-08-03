@@ -26,6 +26,7 @@ class Welcome extends CI_Controller {
 	public function index()
 	{
         $data['logged_in'] = $this->ion_auth->logged_in();
+        $data['enviroment'] = $this->config->item('enviroment');
 		$this->load->view('page', $data);
 	}
 }
