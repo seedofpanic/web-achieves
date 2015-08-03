@@ -44,27 +44,7 @@ class Api extends CI_Controller
 
     public function domain($id = null, $action = null)
     {
-        if (!$this->check_access($this->user_id, $id)) {
-            print '{}';
-            return;
-        }
         $this->load->model('Domain_model');
-        if ($action == 'statistics') {
-            $this->load->model('Achievment_model');
-            $data = $this->Domain_model->statistic($id);
-            $statistic = array(
-                'vals' => array(
-                    array('name' => 'Поситителей зарегистрировано', 'data' => $data['totals'])
-                )
-            );
-            $statistic['totals'] = $data['totals'];
-            $statistic['achieves'] = $this->Achievment_model->statistic($id);
-            print json_encode($statistic);
-        }
-        if ($action == 'get') {
-            $domain = $this->Domain_model->get_by_id($id);
-            print json_encode($domain);
-        }
         if ($action == 'new') {
             $this->form_validation->set_rules('name', 'error', 'required');
             if ($this->form_validation->run() == true) {
@@ -87,6 +67,28 @@ class Api extends CI_Controller
             } else {
                 print '{}';
             }
+            return;
+        }
+        if (!$this->check_access($this->user_id, $id)) {
+            print '{}';
+            return;
+        }
+
+        if ($action == 'statistics') {
+            $this->load->model('Achievment_model');
+            $data = $this->Domain_model->statistic($id);
+            $statistic = array(
+                'vals' => array(
+                    array('name' => 'Поситителей зарегистрировано', 'data' => $data['totals'])
+                )
+            );
+            $statistic['totals'] = $data['totals'];
+            $statistic['achieves'] = $this->Achievment_model->statistic($id);
+            print json_encode($statistic);
+        }
+        if ($action == 'get') {
+            $domain = $this->Domain_model->get_by_id($id);
+            print json_encode($domain);
         }
         if ($action == 'update') {
             $this->form_validation->set_rules('name', 'error', 'required');
@@ -130,7 +132,7 @@ class Api extends CI_Controller
     }
 
     public function achievment($id, $action) {
-        if (!$this->check_access($this->user_id, null, $id)) {
+        if ($id > 0 && !$this->check_access($this->user_id, null, $id)) {
             print '[]';
             return;
         }
