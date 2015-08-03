@@ -50,8 +50,8 @@ class Auth extends CI_Controller {
 		$this->data['title'] = "Login";
 
 		//validate form input
-		$this->form_validation->set_rules('identity', 'Identity', 'required');
-		$this->form_validation->set_rules('password', 'Password', 'required');
+		$this->form_validation->set_rules('identity', 'Email', 'required');
+		$this->form_validation->set_rules('password', 'Пароль', 'required');
 
 		if ($this->form_validation->run() == true)
 		{
@@ -70,8 +70,10 @@ class Auth extends CI_Controller {
 			{
 				// if the login was un-successful
 				// redirect them back to the login page
-				$this->session->set_flashdata('message', $this->ion_auth->errors());
-				redirect('auth/login', 'refresh'); // use redirects instead of loading views for compatibility with MY_Controller libraries
+				$errors = $this->ion_auth->errors();
+                http_response_code(400);
+
+                print json_encode(array('message' => $errors));
 			}
 		}
 		else
@@ -90,7 +92,9 @@ class Auth extends CI_Controller {
 				'type' => 'password',
 			);
 
-			$this->_render_page('auth/login', $this->data);
+            http_response_code(400);
+
+			print json_encode($this->data);
 		}
 	}
 

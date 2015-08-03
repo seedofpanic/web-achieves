@@ -6,7 +6,9 @@
                     Войдите в свою учетную запись
                 </div>
             </h2>
-            <form class="ui large form" ng-controller="loginForm as lf">
+            <form class="ui large form" ng-class="{error: lf.errors.length > 0}" ng-controller="loginForm as lf">
+                <div class="ui error message" ng-repeat="error in lf.errors" ng-bind-html="error.text | sanitize"></div>
+
                 <div class="ui stacked segment">
                     <div class="field">
                         <div class="ui left icon input">
@@ -22,8 +24,6 @@
                     </div>
                     <button type="submit" class="ui fluid large teal submit button" ng-class="{'loading':lf.loading}" ng-click="lf.send()">Вход</button>
                 </div>
-
-                <div class="ui error message"></div>
 
             </form>
 

@@ -55,6 +55,7 @@
         }
     }])
     .controller('loginForm', ['$http', function ($http) {
+            var that = this;
         this.send = function () {
             if (this.loading) {return}
             this.loading = true;
@@ -62,7 +63,10 @@
                 function () {
                     window.location = '/?action=domains';
                 }
-            );
+            ).error(function (data) {
+                    that.errors = [{text: data.message}];
+                    that.loading = false;
+                });
         }
     }])
     .controller('registerForm', ['$http', function ($http) {
