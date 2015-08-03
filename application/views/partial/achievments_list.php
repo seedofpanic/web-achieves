@@ -43,7 +43,7 @@
                     </div>
                     <div class="field">
                         <label>Текст</label>
-                        <textarea type="text" ng-model="achievment.text" ckeditor="ac.editorOptions"/>
+                        <textarea type="text" ng-model="achievment.text" ckeditor="editorOptions"></textarea>
                     </div>
                 </form>
                     <h4 class="ui dividing header">Условия</h4>

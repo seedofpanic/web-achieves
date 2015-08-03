@@ -176,9 +176,9 @@
             var that = this;
             var edit_cache = [];
             that.achievments = [];
-            this.editorOptions = {
+            $scope.editorOptions = {
                 language: 'ru',
-                uiColor: '#000000'
+                height: '100px'
             };
             $http.get(API_URL + 'achievments/' + route['search']['domain_id']).success(function (achievments) {
                 that.achievments = [];
