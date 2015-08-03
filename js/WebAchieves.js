@@ -10,12 +10,12 @@ var WebAchieves = function (params) {
     var DOMAIN = 'http://webachievs.ru/';
 
     this.templates = {
-        achieve: '<div class="achieve {achieved}"><div class="achived-text">Получено</div>' +
+        achieve: '<div class="achieve {achieved}"><div class="achieved-text"></div>' +
         '<div class="close"><a href="javascript:;" onclick="$(this).parents(\'.achieve\').first().remove()">X</a></div>' +
         '<div class="image"><img src="{image}"/></div>' +
         '<div class="content">' +
         '<div class="header">{title}</div>' +
-        '<div class="text"><b>Требование:</b> {text}</div>' +
+        '<div class="text">{text}</div>' +
         '</div>' +
         '</div>',
         box: '<div id="WebAchievesBox">' +

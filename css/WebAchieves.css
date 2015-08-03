@@ -61,10 +61,13 @@
     filter: gray; /* IE6-9 */
     -webkit-filter: grayscale(100%); /* Chrome 19+, Safari 6+, Safari 6+ iOS */
 }
-#WebAchievesBox .not-achieved .achived-text {
+#WebAchievesBox .not-achieved .achieved-text {
     display: none;
 }
-#WebAchievesBox .achived-text {
+.achieved-text:before {
+    content: 'Получено';
+}
+#WebAchievesBox .achieved-text {
     position: absolute;
     left: -40px;
     top: -9px;

@@ -21,7 +21,7 @@
                         <div class="image"><img ng-src="{{achievment.image}}"></div>
                         <div class="content">
                             <div class="header">{{achievment.title}}</div>
-                            <div class="description">{{achievment.text}}</div>
+                            <div class="description" ng-bind-html="achievment.text | sanitize"></div>
                             <div class="ui toggle checkbox active" ng-show="achievment.id>0" ng-model="achievment.active" offText="Не активно" onText="Активно"></div>
                         </div>
                     </div>
@@ -43,7 +43,7 @@
                     </div>
                     <div class="field">
                         <label>Текст</label>
-                        <textarea type="text" ng-model="achievment.text"/>
+                        <textarea type="text" ng-model="achievment.text" ckeditor="ac.editorOptions"/>
                     </div>
                 </form>
                     <h4 class="ui dividing header">Условия</h4>

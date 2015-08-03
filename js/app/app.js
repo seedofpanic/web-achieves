@@ -35,7 +35,12 @@
             });
             data['search'] = search;
             return data;
-        });
+        })
+        .filter("sanitize", ['$sce', function($sce) {
+            return function(htmlCode){
+                return $sce.trustAsHtml(htmlCode);
+            }
+        }]);
 
     angular.module('loginModule', ['tools'])
     .directive('loginPage', ['route', function (route){
@@ -82,7 +87,7 @@
         }
     }]);
 
-    angular.module('accountModule', ['tools'])
+    angular.module('accountModule', ['tools', 'ngCkeditor'])
         .controller('accountController', ['route', '$scope', '$element', function (route, $scope, $element) {
             this.action = route['search']['action'] ? route['search']['action'] : 'domains';
         }])
@@ -171,6 +176,10 @@
             var that = this;
             var edit_cache = [];
             that.achievments = [];
+            this.editorOptions = {
+                language: 'ru',
+                uiColor: '#000000'
+            };
             $http.get(API_URL + 'achievments/' + route['search']['domain_id']).success(function (achievments) {
                 that.achievments = [];
                 achievments.forEach(function (achievment) {
