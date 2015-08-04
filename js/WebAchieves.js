@@ -18,6 +18,14 @@ var WebAchieves = function (params) {
         '<div class="text">{text}</div>' +
         '</div>' +
         '</div>',
+        achieve_ni: '<div class="achieve {achieved}"><div class="achieved-text"></div>' +
+        '<div class="close"><a href="javascript:;" onclick="$(this).parents(\'.achieve\').first().remove()">X</a></div>' +
+        '<div class="image"></div>' +
+        '<div class="content">' +
+        '<div class="header">{title}</div>' +
+        '<div class="text">{text}</div>' +
+        '</div>' +
+        '</div>',
         box: '<div id="WebAchievesBox">' +
         '<div class="controls"><div class="star"></div></div><div class="achieves"></div>' +
         '</div>'
@@ -104,7 +112,12 @@ var WebAchieves = function (params) {
     $('body').append('<iframe src="http://webachievs.ru/iframe.html" style="display: none"></iframe>');
 
     this.showAchieve = function (data) {
-        var achievBlock = $(this.printf(this.templates.achieve, data)).appendTo(this.achievesBox);
+        var achievBlock;
+        if (data.image) {
+            achievBlock = $(this.printf(this.templates.achieve, data)).appendTo(this.achievesBox);
+        } else {
+            achievBlock = $(this.printf(this.templates.achieve_ni, data)).appendTo(this.achievesBox);
+        }
         achievBlock.animate({right: 0}, 1000, 'easeOutElastic');
     };
     return {};

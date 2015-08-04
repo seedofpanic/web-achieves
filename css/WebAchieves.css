@@ -78,3 +78,7 @@
     transform: rotate(-25deg);
     font-size: 20px;
 }
+#WebAchievesBox .achieve .header {
+    font-size: 16px;
+    font-weight: bold;
+}

@@ -13,17 +13,17 @@ class Achievment_model extends CI_Model
 
     public function get_by_ids($ids) {
         if (count($ids) > 0) {
-            return $this->db->where_in('id', $ids)->get('achieves')->result();
+            return $this->db->select('id,title,image,text')->where_in('id', $ids)->get('achieves')->result();
         } else {
             return array();
         }
     }
 
     public function get_for_visitor($domain_id, $session) {
-        $query = $this->db->join('achieve_rules', 'achieve_rules.achieve_id = achieves.id', 'inner')
-            ->select('achieves.*');
-        $query->select('EXISTS(SELECT id FROM visitor_achieves where achieve_id=achieves.id and visitor_id=' . $session->id . ') as achieved', false);
-        $query = $this->db->get_where('achieves', array('domain_id' => $domain_id, 'deleted' => 0, 'active' => 1));
+        $query = $this->db->join('achieve_rules', 'achieve_rules.achieve_id = a.id', 'inner')
+            ->select('a.id,a.title,a.image,a.text');
+        $query->select('EXISTS(SELECT id FROM visitor_achieves where achieve_id=a.id and visitor_id=' . $session->id . ') as achieved', false);
+        $query = $this->db->get_where('achieves a', array('a.domain_id' => $domain_id, 'a.deleted' => 0, 'a.active' => 1));
 
         return $query->result();
     }
