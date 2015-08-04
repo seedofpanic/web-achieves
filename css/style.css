@@ -6,7 +6,8 @@ body {
 }
 .login-page {
     background-color: #DADADA;
-    height: 100%
+    height: 100%;
+    padding: 1em;
 }
 .login-page>div {
     height: 100%;
@@ -37,4 +38,7 @@ body>div>.container {
 }
 .protected:not(.show) {
     display: none;
+}
+.center.aligned {
+    text-align: center;
 }

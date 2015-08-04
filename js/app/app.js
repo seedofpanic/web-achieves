@@ -184,36 +184,43 @@
                 language: 'ru',
                 height: '100px'
             };
+            this.prepareAchiev = function (achievment) {
+                achievment.active = achievment.active > 0;
+                achievment.rules.forEach(function (rule) {
+                    if (rule.type == 2) {
+                        rule.data2 = JSON.parse(rule.data);
+                        rule.data = '';
+                    }
+                    if (rule.type == 3) {
+                        var rdata = rule.data.split('::');
+                        rule.data3 = JSON.parse(rdata[1]);
+                        rule.data = rdata[0];
+                    }
+                });
+                $scope.$watch(function () {
+                    return achievment.active;
+                }, function (activate, oldValue) {
+                    if (activate !== oldValue) {
+                        that.activate(achievment);
+                    }
+                });
+            };
             $http.get(API_URL + 'achievments/' + route['search']['domain_id']).success(function (achievments) {
                 that.achievments = [];
                 achievments.forEach(function (achievment) {
                     that.achievments.push(achievment);
-                    achievment.active = achievment.active > 0 ? true : false;
-                    achievment.rules.forEach(function (rule) {
-                        if (rule.type == 2) {
-                            rule.data2 = JSON.parse(rule.data);
-                            rule.data = '';
-                        }
-                        if (rule.type == 3) {
-                            var rdata = rule.data.split('::');
-                            rule.data3 = JSON.parse(rdata[1]);
-                            rule.data = rdata[0];
-                        }
-                    });
-                    $scope.$watch(function () {
-                        return achievment.active;
-                    }, function (activate, oldValue) {
-                        if (activate !== oldValue) {
-                            that.activate(achievment);
-                        }
-                    });
+                    that.prepareAchiev(achievment);
                 });
             });
+            this.showStarterPacks = function () {
+                $('#StarterPack').modal('show');
+            };
             this.activate = function (achievment) {
                 $http.post(API_URL + 'achievment/' + achievment.id + '/activate', $.param({activate: achievment.active}));
             };
             this.add = function () {
-                that.achievments.push({name: 'Новое достижение', edit: true, domain_id: route['search']['domain_id']})
+                var achievment = {active: false, name: 'Новое достижение', edit: true, domain_id: route['search']['domain_id']};
+                that.achievments.push(achievment);
             };
             this.save = function (achievment) {
                 if (achievment.loading) {return}

@@ -168,7 +168,11 @@ class Api extends CI_Controller
         }
     }
 
-    public function timeout($achieve_id = null) {
+    public function achieve($achieve_id) {
+        $this->timeout($achieve_id);
+    }
+
+    public function timeout($achieve_id) {
         //TODO проверить принадлежит ли домен юзеру
         $this->load->model('Achievment_model');
         $this->load->model('Visitor_model');
@@ -189,26 +193,40 @@ class Api extends CI_Controller
         $this->doAchieve($achievments, $achieved, $achieve->domain_id, $session, $data);
     }
 
+    //Должен вызываться один раз за страницу
     public function check($domain_id = null) {
-        //TODO проверить принадлежит ли домен юзеру
         $this->load->model('Achievment_model');
         $this->load->model('Visitor_model');
 
         $url = parse_url($this->input->post('url'));
+        $parsed_url = $url['path']
+            . (isset($url['query']) ? '?' . $url['query'] : '')
+            . (isset($url['fragment']) ? '#' . $url['fragment'] : '');
         $session = $this->Visitor_model->get(array('session' => $this->input->post('session_id')));
+        $new_stats = $this->Visitor_model->update_stats($domain_id, $session->id,
+            array('url' => $parsed_url)
+        );
         $achieved = $this->Visitor_model->achieved($domain_id, $session);
         $data = array(
-            'url' => $url['path']
-                . (isset($url['query']) ? '?' . $url['query'] : '')
-                . (isset($url['fragment']) ? '#' . $url['fragment'] : ''),
+            'url' => $parsed_url,
             'achieved' => $achieved
         );
 
+        // Проверяем выполненные по заходу на урл
         $achievments = $this->Achievment_model->get_by_rules($domain_id, $data);
 
-        $this->doAchieve($achievments, $achieved, $domain_id, $session, $data);
+        $new_achieved = $achievments;
+
+        // Проверяем выполненные по набранной статистике
+        $new_stats['achieved'] = $achieved;
+        $achievments = $this->Achievment_model->get_by_stats($domain_id, $new_stats);
+
+        $new_achieved = array_merge($achievments, array_diff($new_achieved, $achievments));
+
+        $this->doAchieve($new_achieved, $achieved, $domain_id, $session, $data);
     }
 
+    // Записываем выполненные достижения, затем проверяем не получили ли мы достижений за выполнение достижений... We need to go deeper...
     private function doAchieve($achievments, $achieved, $domain_id, $session, $data) {
         $achieved = array_merge($achievments, array_diff($achieved, $achievments));
         do {

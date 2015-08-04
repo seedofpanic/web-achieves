@@ -47,6 +47,32 @@ class Visitor_model extends CI_Model
         }
     }
 
+    public function update_stats($domain_id, $session_id, $data) {
+        $result = $this->db->get_where('visitor_stats', array(
+            'domain_id' => $domain_id,
+            'visitor_id' => $session_id
+        ), 1, 0)->result_array();
+        if (isset($result[0])) {
+            $stats = $result[0];
+            if ($data['url'] != $stats['last_url']) {
+                $stats['visits_count']++;
+            }
+            $this->db->update('visitor_stats', array(
+                'last_url' => $data['url'],
+                'visits_count' => $stats['visits_count']
+            ), array('id' => $stats['id']));
+        } else {
+            $stats = array(
+                'domain_id' => $domain_id,
+                'visitor_id' => $session_id,
+                'last_url' => $data['url'],
+                'visits_count' => 1
+            );
+            $this->db->insert('visitor_stats', $stats);
+        }
+        return $stats;
+    }
+
     public function achieved($domain_id, $session){
         $query = $this->db->select('a.id')
             ->join('visitor_achieves va', 'visitor_id=' . $session->id . ' and va.achieve_id=a.id', 'inner')

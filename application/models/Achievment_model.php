@@ -1,5 +1,6 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+
 class Achievment_model extends CI_Model
 {
     public $rules = null;
@@ -32,6 +33,20 @@ class Achievment_model extends CI_Model
             ->where(array(
                 'achieve_rules.type' => 1,
                 'achieve_rules.data' => $data['url']
+            ));
+        if (count($data['achieved']) > 0) {
+            $query->where_not_in('a.id', $data['achieved']);
+        }
+        $query = $this->db->select('a.id')->get_where('achieves a', array('domain_id' => $domain_id, 'deleted' => 0, 'active' => 1));
+
+        return array_map(function ($item) {return $item->id;}, $query->result());
+    }
+
+    public function get_by_stats($domain_id, $data) {
+        $query = $this->db->join('achieve_rules', 'achieve_rules.achieve_id = a.id', 'inner')
+            ->where(array(
+                'achieve_rules.type' => 4,
+                'achieve_rules.data<=' => $data['visits_count']
             ));
         if (count($data['achieved']) > 0) {
             $query->where_not_in('a.id', $data['achieved']);

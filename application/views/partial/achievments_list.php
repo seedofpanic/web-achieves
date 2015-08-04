@@ -9,7 +9,7 @@
         <i class="right chevron icon divider"></i>
         <div class="active section">{{domain.name}} - Достижения</div>
     </div>
-    <div class="achievments ui segments">
+    <div class="achievments ui segments" ng-show="ac.achievments.length>0">
         <div class="achieve ui segment" ng-repeat="achievment in ac.achievments">
             <div class="info" ng-hide="achievment.edit">
                 <button class="ui button right floated icon red" ng-click="ac.remove(achievment)" ng-hide="achievment.deleted>0" title="Удалить"><i class="icon delete"></i></button>
@@ -58,6 +58,7 @@
                                         <option value="1">Заход на страницу</option>
                                         <option value="2">Выполнить другие достижения</option>
                                         <option value="3">Таймаут</option>
+                                        <option value="4">Количество переходов по страницам</option>
                                     </select>
                                 </div>
                                 <div ng-switch on="rule.type">
@@ -112,6 +113,12 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div ng-switch-when="4">
+                                        <div class="field" ng-class="{disabled:rule.deleted>0}">
+                                            <label>Количество переходов</label>
+                                            <input type="number" ng-model="rule.data" ng-disabled="rule.deleted>0"/>
+                                        </div>
+                                    </div>
                                 </div>
                             </form>
                         </div>
@@ -128,10 +135,46 @@
                     <div class="clear"></div>
             </div>
         </div>
-        <div class="ui segment" ng-hide="ac.achievments.length>0">
-            <div class="ui message info">Пока нет созданных вами достижений</div>
+    </div>
+    <div class="center aligned" ng-click="ac.showStarterPacks()" ng-hide="ac.achievments.length>0">
+        <div class="ui button orange big">Использовать стартовый набор</div>
+        <div class="ui message info">Пока нет созданных вами достижений</div>
+    </div>
+    <div class="ui divider"></div>
+    <button class="ui button right floated primary" ng-click="ac.add()">Добавить достижение</button>
+    <div class="ui button orange" ng-click="ac.showStarterPacks()" ng-show="ac.achievments.length>0">Использовать стартовый набор</div>
+    <div class="clear"></div>
+</div>
+
+<div id="StarterPack" class="ui modal">
+    <i class="close icon"></i>
+    <div class="header">
+        Начните с использования готового набора достижений
+    </div>
+    <div class="content">
+        <form class="ui form">
+            <div class="field">
+                <select ng-model="type">
+                    <option value="0" ng-selected="!type">Стандарт</option>
+                </select>
+            </div>
+            <table class="ui table" ng-switch on="type">
+                <tbody ng-switch-when="0">
+                    <tr>
+                        <td>
+
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
+    <div class="actions">
+        <div class="ui black deny button">
+            Отмена
+        </div>
+        <div class="ui positive right labeled button">
+            Добавить
         </div>
     </div>
-    <button class="ui button right floated primary" ng-click="ac.add()">Добавить достижение</button>
-    <div class="clear"></div>
 </div>
