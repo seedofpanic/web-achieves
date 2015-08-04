@@ -116,7 +116,7 @@
                                     <div ng-switch-when="4">
                                         <div class="field" ng-class="{disabled:rule.deleted>0}">
                                             <label>Количество переходов</label>
-                                            <input type="number" ng-model="rule.data" ng-disabled="rule.deleted>0"/>
+                                            <input type="number" string-to-number ng-model="rule.data" ng-disabled="rule.deleted>0"/>
                                         </div>
                                     </div>
                                 </div>

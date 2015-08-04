@@ -6,6 +6,9 @@ class Achievment_model extends CI_Model
     public $rules = null;
 
     public function check_access($user_id, $achieve_id) {
+        if (!($user_id > 0)) {
+            return false;
+        }
         $query = $this->db->join('domains d', 'd.user_id=' . $user_id . ' and d.id=a.domain_id', 'inner')
             ->get_where('achieves a', array('a.id' => $achieve_id, 'a.deleted' => 0));
         return count($query->result()) > 0 ? true : false;

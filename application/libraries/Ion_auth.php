@@ -125,6 +125,15 @@ class Ion_auth
 		return get_instance()->$var;
 	}
 
+    public function get_user() {
+        $user = $this->ion_auth->session;
+        return array(
+                'id' => $user->userdata('user_id'),
+                'username' => $user->userdata('username'),
+                'email' => $user->userdata('email')
+            );
+    }
+
 
 	/**
 	 * forgotten password feature

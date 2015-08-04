@@ -12,6 +12,12 @@ class Api extends CI_Controller
         header('Access-Control-Allow-Origin: *');
     }
 
+    public function me() {
+        print json_encode(
+            $this->ion_auth->get_user()
+        );
+    }
+
     private function check_access($user_id, $domain_id = null, $achieve_id = null) {
         if ($domain_id != null) {
             $this->load->model('Domain_model');
@@ -70,6 +76,7 @@ class Api extends CI_Controller
             return;
         }
         if (!$this->check_access($this->user_id, $id)) {
+            http_response_code(401);
             print '{}';
             return;
         }
@@ -85,6 +92,21 @@ class Api extends CI_Controller
             $statistic['totals'] = $data['totals'];
             $statistic['achieves'] = $this->Achievment_model->statistic($id);
             print json_encode($statistic);
+        }
+        if ($action == 'starter_pack') {
+            $data = array(
+                'name' => '',
+                'title' => '',
+                'image' => '',
+                'text' => '',
+                'domain_id' => ''
+            );
+            $rules = array(
+                'type' => '4',
+                'data' => '3'
+            );
+            $new_id = $this->Achievment_model->save(null, $data);
+            $this->Achievment_rule_model->save_batch($new_id, $rules);
         }
         if ($action == 'get') {
             $domain = $this->Domain_model->get_by_id($id);
@@ -115,6 +137,7 @@ class Api extends CI_Controller
     public function achievments($id, $offset = 0)
     {
         if (!$this->check_access($this->user_id, $id)) {
+            http_response_code(401);
             print '[]';
             return;
         }
@@ -133,8 +156,16 @@ class Api extends CI_Controller
 
     public function achievment($id, $action) {
         if ($id > 0 && !$this->check_access($this->user_id, null, $id)) {
+            http_response_code(401);
             print '[]';
             return;
+        }
+        if (!($id > 0)) {
+            if (!$this->check_access($this->user_id, $this->input->post('domain_id'))) {
+                http_response_code(401);
+                print '{}';
+                return;
+            }
         }
         $this->load->model('Achievment_model');
         $this->load->model('Achievment_rule_model');

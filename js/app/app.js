@@ -40,7 +40,25 @@
             return function(htmlCode){
                 return $sce.trustAsHtml(htmlCode);
             }
-        }]);
+        }])
+        .run(function($rootScope) {
+            $rootScope.typeOf = function(value) {
+                return typeof value;
+            };
+        })
+        .directive('stringToNumber', function() {
+            return {
+                require: 'ngModel',
+                link: function(scope, element, attrs, ngModel) {
+                    ngModel.$parsers.push(function(value) {
+                        return '' + value;
+                    });
+                    ngModel.$formatters.push(function(value) {
+                        return parseFloat(value, 10);
+                    });
+                }
+            };
+        });
 
     angular.module('loginModule', ['tools'])
     .directive('loginPage', ['route', function (route){
@@ -54,14 +72,15 @@
             }
         }
     }])
-    .controller('loginForm', ['$http', function ($http) {
+    .controller('loginForm', ['$http', '$rootScope', function ($http, $rootScope) {
             var that = this;
         this.send = function () {
             if (this.loading) {return}
             this.loading = true;
             $http.post(AUTH_URL + 'login', $.param({identity: this.email, password: this.password, submit: 'Login'})).success(
-                function () {
-                    window.location = '/?action=domains';
+                function (user) {
+                    $rootScope.user = user;
+                    that.loading = false;
                 }
             ).error(function (data) {
                     that.errors = [{text: data.message}];
@@ -90,6 +109,27 @@
             );
         }
     }]);
+
+    angular.module('privatePageModule', [], function ($httpProvider) {
+        $httpProvider.interceptors.push(function($q, $rootScope) {
+            return {
+                'responseError': function(response) {
+                    if (response.status == 401) {
+                        $rootScope.user = undefined;
+                    }
+                    return $q.reject(response);
+                }
+            };
+        });
+    })
+        .run(['$http', '$rootScope', function ($http, $rootScope) {
+            $rootScope.loading = true;
+            $http.get(API_URL + 'me').success(function (user){
+                $rootScope.user = user;
+            }).error(function () {
+                $rootScope.loading = false;
+            });
+        }]);
 
     angular.module('accountModule', ['tools', 'ngCkeditor'])
         .controller('accountController', ['route', '$scope', '$element', function (route, $scope, $element) {
@@ -230,6 +270,8 @@
                     achievment.id = achievement.id;
                     achievment.edit = false;
                     achievment.loading = false;
+                }).error(function () {
+                    achievment.loading = false;
                 });
                 if (achievment.rules) {
                     $.each(achievment.rules, function (key, item) {
@@ -325,7 +367,7 @@
         }
     });
 
-    angular.module('achievesApp', ['loginModule', 'accountModule', 'UITools'])
+    angular.module('achievesApp', ['loginModule', 'accountModule', 'privatePageModule', 'UITools'])
         .run(function ($http){
             $http.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded";
         });

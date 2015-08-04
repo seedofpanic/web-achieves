@@ -21,12 +21,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <!-- {/literal} END JIVOSITE CODE -->
 </head>
 <body>
-<div class="<?if (!$logged_in) {
-    echo 'login-page';
- }else{
-    echo 'account-page';
- }?>"></div>
-
+    <div class="login-page" ng-hide="user.id>0"></div>
+    <div class="account-page" ng-show="user.id>0"></div>
+</div>
 
 </body>
 </html>

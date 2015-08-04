@@ -3,6 +3,9 @@
 class Domain_model extends CI_Model
 {
     public function check_access($user_id, $domain_id) {
+        if (!($user_id > 0)) {
+            return false;
+        }
         $query = $this->db->get_where('domains', array('user_id' => $user_id, 'id' => $domain_id, 'deleted' => 0));
         return (count($query->result()) > 0) ? true : false;
     }
@@ -32,7 +35,7 @@ class Domain_model extends CI_Model
     }
 
     public function statistic($domain_id) {
-        $totals = $this->db->where(array('domain_id' => $domain_id))->count_all('visitor_domains');
+        $totals = $this->db->where(array('domain_id' => $domain_id))->count_all_results('visitor_domains');
         return array('totals' => $totals);
     }
 
