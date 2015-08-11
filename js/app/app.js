@@ -182,7 +182,6 @@
                         }
                     ];
                 }).error(function (msg) {
-                    console.log(msg);
                     $scope.messages = [
                         {
                             msg: msg,
