@@ -94,19 +94,97 @@ class Api extends CI_Controller
             print json_encode($statistic);
         }
         if ($action == 'starter_pack') {
-            $data = array(
-                'name' => '',
-                'title' => '',
-                'image' => '',
-                'text' => '',
-                'domain_id' => ''
-            );
-            $rules = array(
-                'type' => '4',
-                'data' => '3'
-            );
-            $new_id = $this->Achievment_model->save(null, $data);
-            $this->Achievment_rule_model->save_batch($new_id, $rules);
+            $this->load->model('Achievment_model');
+            $this->load->model('Achievment_rule_model');
+            if ($this->input->post('type') === '0') {
+                $rules_data = $this->input->post('data');
+                $achieves = array();
+                //1)Посищение 1 страницы
+                $data = array(
+                    'name' => 'Стандарт 1',
+                    'title' => 'Добро пожаловать!',
+                    'image' => 'http://webachievs.ru/images/prep/default/1.jpg',
+                    'text' => '<p>Мы рады вас видеть сайте. У вас получилось выполнить первое достижение.</p><p><a href="javascript:;" onclick="WA.showAll()">Раскрыть все достижения которые мы для вас приготовили.</a></p>',
+                    'domain_id' => $id
+                );
+                $rules = array(array(
+                    'type' => '4',
+                    'data' => '1'
+                ));
+                $new_id = $this->Achievment_model->save(null, $data);
+                $this->Achievment_rule_model->save_batch($new_id, $rules);
+                $achieves[] = (string)$new_id;
+                //2)Посещение 3х страниц
+                $data = array(
+                    'name' => 'Стандарт 2',
+                    'title' => 'Первое знакомство.',
+                    'image' => 'http://webachievs.ru/images/prep/default/2.jpg',
+                    'text' => 'Посмотрите 3 страницы нашего сайта.',
+                    'domain_id' => $id
+                );
+                $rules = array(array(
+                    'type' => '4',
+                    'data' => (int)$rules_data['2']
+                ));
+                $new_id = $this->Achievment_model->save(null, $data);
+                $this->Achievment_rule_model->save_batch($new_id, $rules);
+                $achieves[] = (string)$new_id;
+                //3)30 секунд на странице
+                $data = array(
+                    'name' => 'Стандарт 3',
+                    'title' => 'Внимательный читатель.',
+                    'image' => 'http://webachievs.ru/images/prep/default/3.jpg',
+                    'text' => 'Провести 30 секунд на странице.',
+                    'domain_id' => $id
+                );
+                $rules = array(array(
+                    'type' => '5',
+                    'data3' => json_encode($rules_data['3']),
+                    'data' => ''
+                ));
+                $new_id = $this->Achievment_model->save(null, $data);
+                $this->Achievment_rule_model->save_batch($new_id, $rules);
+                $achieves[] = (string)$new_id;
+                //4)Посещение страницы
+                $data = array(
+                    'name' => 'Стандарт 4',
+                    'title' => 'Интересная страница.',
+                    'image' => 'http://webachievs.ru/images/prep/default/4.jpg',
+                    'text' => 'Вы посетили важную страницу нашего сайта',
+                    'domain_id' => $id
+                );
+                $rules = array(array(
+                    'type' => '1',
+                    'data' => $this->Achievment_rule_model->parseLink($rules_data['4'])
+                ));
+                $new_id = $this->Achievment_model->save(null, $data);
+                $this->Achievment_rule_model->save_batch($new_id, $rules);
+                $achieves[] = (string)$new_id;
+                //5)Выполнение всех ачивок
+                $data = array(
+                    'name' => 'Стандарт 4',
+                    'title' => 'Король достижений.',
+                    'image' => 'http://webachievs.ru/images/prep/default/5.jpg',
+                    'text' => 'Поздравляем, вы собрали все достижения которые мы вам приготовили.',
+                    'domain_id' => $id
+                );
+                $rules = array(array(
+                    'type' => '2',
+                    'data2' => $achieves,
+                    'data' => ''
+                ));
+                $new_id = $this->Achievment_model->save(null, $data);
+                $this->Achievment_rule_model->save_batch($new_id, $rules);
+                $achieves[] = (string)$new_id;
+
+                $achievments = $this->Achievment_model->get_by_domain($id);
+
+                foreach ($achievments as &$achievment) {
+                    $achievment->rules = $this->Achievment_rule_model->get_by_achieve($achievment->id);
+                }
+
+                print json_encode($achievments);
+            }
         }
         if ($action == 'get') {
             $domain = $this->Domain_model->get_by_id($id);

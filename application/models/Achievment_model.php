@@ -61,14 +61,14 @@ class Achievment_model extends CI_Model
 
     public function get_timer_rules($domain_id, $data) {
         $query = $this->db->join('achieve_rules', 'achieve_rules.achieve_id = a.id', 'inner')
-            ->where(array(
-                'achieve_rules.type' => 3,
-                'achieve_rules.data like' => $data['url'] . '%'
-            ));
+            ->where("((achieve_rules.type=3 and
+                achieve_rules.data like " . $this->db->escape($data['url'] . '%') . ") or
+                achieve_rules.type=5)
+            ", null,false);
         if (count($data['achieved']) > 0) {
             $query->where_not_in('a.id', $data['achieved']);
         }
-        $query = $this->db->select('a.id,achieve_rules.data')->get_where('achieves a', array('domain_id' => $domain_id, 'deleted' => 0, 'active' => 1));
+        $query = $this->db->select('a.id,achieve_rules.type,achieve_rules.data')->get_where('achieves a', array('domain_id' => $domain_id, 'deleted' => 0, 'active' => 1));
         return $query->result();
     }
 

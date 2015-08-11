@@ -27,11 +27,15 @@ class Achievment_rule_model extends CI_Model
                 } else {
                     $rule['data'] = $this->parseLink($rule['data']);
                     if ($rule['type'] == '2') {
-                        $rule_data = json_encode(isset($rule['data2']) ? $rule['data2'] : '');
+                        $rule_data = json_encode(isset($rule['data2']) ? $rule['data2'] : array());
                     } else if ($rule['type'] == '3') {
                         $rule_data = $rule['data'] . '::' . json_encode(
                             isset($rule['data3']) ? $rule['data3'] : ''
                         );
+                    } else if ($rule['type'] == '5') {
+                        $rule_data = json_encode(
+                                isset($rule['data3']) ? $rule['data3'] : ''
+                            );
                     } else {
                         $rule_data = isset($rule['data']) ? $rule['data'] : '';
                     }

@@ -82,8 +82,14 @@ var WebAchieves = function (params) {
             that.showAchieve(val);
         });
         $.each(data.timers, function (key, val) {
-            var data = val.data.split('::');
-            delay = JSON.parse(data[1]);
+            var data;
+            var delay;
+            if (val.type == 3) {
+                data = val.data.split('::');
+                delay = JSON.parse(data[1]);
+            } else {
+                delay = JSON.parse(JSON.parse(val.data));
+            }
             setTimeout(function () {
                     that.claimTimeoutAchieve(val)
                 }, ((delay.min ? delay.min : 0) * 60 + (delay.sec ? delay.sec : 0)) * 1000

@@ -216,15 +216,18 @@
                 }
             }
         }])
-        .controller('achievmentsController', ['$http', 'route', '$scope', function ($http, route, $scope) {
+        .controller('starterPackController', ['$http', 'Achievments', 'route', function ($http, Achievments, route) {
             var that = this;
-            var edit_cache = [];
-            that.achievments = [];
-            $scope.editorOptions = {
-                language: 'ru',
-                height: '100px'
+            var domain_id = route['search']['domain_id'];
+            this.add = function () {
+                $http.post(API_URL + 'domain/' + domain_id + '/starter_pack', $.param({type: that.type, data: that.data[that.type]})).success(function (achievments) {
+                    Achievments.set(achievments);
+                });
             };
-            this.prepareAchiev = function (achievment) {
+        }])
+        .factory('Achievments', function () {
+            var achieves = [];
+            var prepareAchiev = function (achievment) {
                 achievment.active = achievment.active > 0;
                 achievment.rules.forEach(function (rule) {
                     if (rule.type == 2) {
@@ -236,21 +239,33 @@
                         rule.data3 = JSON.parse(rdata[1]);
                         rule.data = rdata[0];
                     }
-                });
-                $scope.$watch(function () {
-                    return achievment.active;
-                }, function (activate, oldValue) {
-                    if (activate !== oldValue) {
-                        that.activate(achievment);
+                    if (rule.type == 5) {
+                        rule.data3 = JSON.parse(rule.data);
                     }
                 });
             };
-            $http.get(API_URL + 'achievments/' + route['search']['domain_id']).success(function (achievments) {
-                that.achievments = [];
+            var set = function (achievments) {
                 achievments.forEach(function (achievment) {
-                    that.achievments.push(achievment);
-                    that.prepareAchiev(achievment);
+                    achieves.push(achievment);
+                    prepareAchiev(achievment);
                 });
+            };
+            return {
+                set: set,
+                achieves: achieves
+            }
+        })
+        .controller('achievmentsController', ['$http', 'route', '$scope', 'Achievments', function ($http, route, $scope, Achievments) {
+            var that = this;
+            var edit_cache = [];
+            that.achievments = Achievments.achieves;
+            $scope.editorOptions = {
+                language: 'ru',
+                height: '100px'
+            };
+
+            $http.get(API_URL + 'achievments/' + route['search']['domain_id']).success(function (achievments) {
+                Achievments.set(achievments);
             });
             this.showStarterPacks = function () {
                 $('#StarterPack').modal('show');

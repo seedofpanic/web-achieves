@@ -76,7 +76,7 @@ class Visitor_model extends CI_Model
     public function achieved($domain_id, $session){
         $query = $this->db->select('a.id')
             ->join('visitor_achieves va', 'visitor_id=' . $session->id . ' and va.achieve_id=a.id', 'inner')
-        ->get_where('achieves a', array('domain_id', $domain_id));
+        ->get_where('achieves a', array('a.domain_id' => $domain_id));
         return array_map(function ($item) {
             return $item->id;
         },$query->result());

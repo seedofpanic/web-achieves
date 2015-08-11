@@ -1,4 +1,4 @@
-<div ng-class="{show: domain && !(domain.id > 0)}" class="protected">
+<div ng-class="{show: domain && !(domain.id > 0)}" class="protected" xmlns="http://www.w3.org/1999/html">
     <div class="ui message error">
         У вас нет доступа к данному разделу
     </div>
@@ -22,7 +22,7 @@
                         <div class="content">
                             <div class="header">{{achievment.title}}</div>
                             <div class="description" ng-bind-html="achievment.text | sanitize"></div>
-                            <div class="ui toggle checkbox active" ng-show="achievment.id>0" ng-model="achievment.active" offText="Не активно" onText="Активно"></div>
+                            <div class="ui toggle checkbox active" ng-show="achievment.id>0" ng-model="achievment.active" offText="Не активно" onText="Активно" ng-change="ac.activate(achievment)"></div>
                         </div>
                     </div>
                 </div>
@@ -58,6 +58,7 @@
                                         <option value="1">Заход на страницу</option>
                                         <option value="2">Выполнить другие достижения</option>
                                         <option value="3">Таймаут</option>
+                                        <option value="5">Таймаут на любой странице</option>
                                         <option value="4">Количество переходов по страницам</option>
                                     </select>
                                 </div>
@@ -119,6 +120,25 @@
                                             <input type="number" string-to-number ng-model="rule.data" ng-disabled="rule.deleted>0"/>
                                         </div>
                                     </div>
+                                    <div ng-switch-when="5">
+                                        <div class="field" ng-class="{disabled:rule.deleted>0}">
+                                            <label>Время</label>
+                                            <div class="fields four">
+                                                <div class="field one">
+                                                    <label>Минуты:</label>
+                                                </div>
+                                                <div class="field">
+                                                    <input type="text" ng-model="rule.data3.min" ng-disabled="rule.deleted>0"/>
+                                                </div>
+                                                <div class="field one">
+                                                    <label>Секунды:</label>
+                                                </div>
+                                                <div class="field">
+                                                    <input type="text" ng-model="rule.data3.sec" ng-disabled="rule.deleted>0"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </form>
                         </div>
@@ -146,7 +166,7 @@
     <div class="clear"></div>
 </div>
 
-<div id="StarterPack" class="ui modal">
+<div id="StarterPack" class="ui modal" ng-controller="starterPackController as spc">
     <i class="close icon"></i>
     <div class="header">
         Начните с использования готового набора достижений
@@ -154,26 +174,66 @@
     <div class="content">
         <form class="ui form">
             <div class="field">
-                <select ng-model="type">
-                    <option value="0" ng-selected="!type">Стандарт</option>
+                <select ng-model="spc.type" ng-init="spc.type=0">
+                    <option value="1" ng-selected="spc.type==0">Стандарт</option>
                 </select>
             </div>
-            <table class="ui table" ng-switch on="type">
-                <tbody ng-switch-when="0">
-                    <tr>
-                        <td>
-
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <form class="ui form">
+                <table class="ui table" ng-switch on="spc.type">
+                    <tbody ng-switch-when="0" ng-init="spc.data[0] = {2: 3, 3: {min: 0, sec: 30}, 4: '/'}">
+                        <tr>
+                            <td>
+                                Добро пожаловать!
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Первое знакомство.
+                            </td>
+                            <td><input type="number" ng-model="spc.data[0][2]"/></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Внимательный читатель.
+                            </td>
+                            <td>
+                                <div class="fields two">
+                                    <div class="inline field">
+                                        <label>Минут</label>
+                                        <input type="number" ng-model="spc.data[0][3].min">
+                                    </div>
+                                    <div class="inline field">
+                                        <label>Секунд</label>
+                                        <input type="number" ng-model="spc.data[0][3].sec">
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Интересная страница.
+                            </td>
+                            <td>
+                                <input type="text" ng-model="spc.data[0][4]">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Добро пожаловать!
+                            </td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
         </form>
     </div>
     <div class="actions">
         <div class="ui black deny button">
             Отмена
         </div>
-        <div class="ui positive right labeled button">
+        <div class="ui positive right labeled button" ng-click="spc.add()">
             Добавить
         </div>
     </div>
