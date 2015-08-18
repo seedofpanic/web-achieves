@@ -115,7 +115,7 @@ var WebAchieves = function (params) {
             }
         },
         false);
-    $('body').append('<iframe src="http://webachievs.ru/iframe.html" style="display: none"></iframe>');
+    $('body').append('<iframe src="' + DOMAIN + 'iframe.html" style="display: none"></iframe>');
 
     this.showAchieve = function (data) {
         var achievBlock;

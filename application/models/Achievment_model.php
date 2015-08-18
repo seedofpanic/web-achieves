@@ -16,7 +16,8 @@ class Achievment_model extends CI_Model
 
     public function get_by_ids($ids) {
         if (count($ids) > 0) {
-            return $this->db->select('id,title,image,text')->where_in('id', $ids)->get('achieves')->result();
+            $achieves = $this->db->select('id,title,image,text')->where_in('id', $ids)->get('achieves')->result();
+            return $achieves;
         } else {
             return array();
         }
@@ -24,11 +25,24 @@ class Achievment_model extends CI_Model
 
     public function get_for_visitor($domain_id, $session) {
         $query = $this->db->join('achieve_rules', 'achieve_rules.achieve_id = a.id', 'inner')
-            ->select('a.id,a.title,a.image,a.text');
+            ->select('a.id,a.title,a.image,a.title_hidden,a.image_hidden,a.text_hidden,a.text');
         $query->select('EXISTS(SELECT id FROM visitor_achieves where achieve_id=a.id and visitor_id=' . $session->id . ') as achieved', false);
         $query = $this->db->get_where('achieves a', array('a.domain_id' => $domain_id, 'a.deleted' => 0, 'a.active' => 1));
-
-        return $query->result();
+        $achieves = $query->result();
+        foreach ($achieves as &$achieve) {
+            if (!$achieve->achieved) {
+                if ($achieve->title_hidden) {
+                    $achieve->title = '????? ?????';
+                }
+                if ($achieve->image_hidden) {
+                    $achieve->image = 'http://webachievs.ru/images/hidden.jpg';
+                }
+                if ($achieve->text_hidden) {
+                    $achieve->text = '????? ?????';
+                }
+            }
+        }
+        return $achieves;
     }
 
     public function get_by_rules($domain_id, $data) {

@@ -45,6 +45,27 @@
                         <label>Текст</label>
                         <textarea type="text" ng-model="achievment.text" ckeditor="editorOptions"></textarea>
                     </div>
+                    <div class="grouped fields">
+                        <label>Скрыть до выполнения:</label>
+                        <div class="field">
+                            <div class="ui">
+                                <label>Название</label>
+                                <div class="ui toggle checkbox" ng-model="achievment.title_hidden" offText="Видимо" onText="Скрыто"></div>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui">
+                                <label>Картинка</label>
+                                <div class="ui toggle checkbox" ng-model="achievment.image_hidden" offText="Видимо" onText="Скрыто"></div>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui">
+                                <label>Название</label>
+                                <div class="ui toggle checkbox" ng-model="achievment.text_hidden" offText="Видимо" onText="Скрыто"></div>
+                            </div>
+                        </div>
+                    </div>
                 </form>
                     <h4 class="ui dividing header">Условия</h4>
                     <div class="ui segments" ng-controller="RulesController as rc">

@@ -33,6 +33,12 @@ class Api extends CI_Controller
     {
         $this->load->model('Domain_model');
 
+        if (!$this->ion_auth->logged_in()) {
+            http_response_code(401);
+            print '{}';
+            return;
+        }
+
         $domains = $this->Domain_model->get_by_user($this->user_id);
 
         print json_encode($domains);
@@ -261,7 +267,10 @@ class Api extends CI_Controller
                 'title' => $this->input->post('title'),
                 'image' => $this->input->post('image'),
                 'text' => $this->input->post('text'),
-                'domain_id' => $this->input->post('domain_id')
+                'domain_id' => $this->input->post('domain_id'),
+                'title_hidden' => $this->input->post('title_hidden'),
+                'image_hidden' => $this->input->post('image_hidden'),
+                'text_hidden' => $this->input->post('text_hidden')
             );
             $new_id = $this->Achievment_model->save($id, $data);
             $achievment = $this->Achievment_model->get_by_id($new_id);

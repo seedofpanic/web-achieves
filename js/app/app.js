@@ -81,6 +81,15 @@
                 function (user) {
                     $rootScope.user = user;
                     that.loading = false;
+                    var config = $rootScope.failed_request.config;
+                    if (config.url == "/index.php/api/domains") {
+                        window.location.reload();
+                    }
+                    /*var defer = $rootScope.failed_request.defer;
+                    console.log($rootScope.failed_request);
+                    $http(config).success(function (data) {
+                        defer.resolve(data);
+                    });*/
                 }
             ).error(function (data) {
                     that.errors = [{text: data.message}];
@@ -113,9 +122,11 @@
     angular.module('privatePageModule', [], function ($httpProvider) {
         $httpProvider.interceptors.push(function($q, $rootScope) {
             return {
-                'responseError': function(response) {
+                'responseError': function(response, r) {
                     if (response.status == 401) {
                         $rootScope.user = undefined;
+                        $rootScope.failed_request = response;
+                        $rootScope.failed_request.defer = $q.defer();
                     }
                     return $q.reject(response);
                 }
@@ -228,6 +239,9 @@
             var achieves = [];
             var prepareAchiev = function (achievment) {
                 achievment.active = achievment.active > 0;
+                achievment.title_hidden = achievment.title_hidden > 0;
+                achievment.image_hidden = achievment.image_hidden > 0;
+                achievment.text_hidden = achievment.text_hidden > 0;
                 achievment.rules.forEach(function (rule) {
                     if (rule.type == 2) {
                         rule.data2 = JSON.parse(rule.data);
@@ -359,6 +373,7 @@
     angular.module('UITools', [])
     .directive('checkbox', function () {
         return {
+            scope: {},
             require:"ngModel",
             restrict: 'C',
             template: '<input type="checkbox" class="hidden"/><label ng-click="switch()">{{text}}<span ng-hide="on">{{offText}}</span><span ng-show="on">{{onText}}</span></label>',
