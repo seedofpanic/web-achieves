@@ -41,7 +41,8 @@ class Visitor_model extends CI_Model
         foreach ($achieves as $achieve) {
             $data = array(
                 'achieve_id' => $achieve,
-                'visitor_id' => $session->id
+                'visitor_id' => $session->id,
+                'achieve_date' => time()
             );
             $this->db->insert('visitor_achieves', $data);
         }
@@ -66,7 +67,8 @@ class Visitor_model extends CI_Model
                 'domain_id' => $domain_id,
                 'visitor_id' => $session_id,
                 'last_url' => $data['url'],
-                'visits_count' => 1
+                'visits_count' => 1,
+                'first_visit' => time()
             );
             $this->db->insert('visitor_stats', $stats);
         }

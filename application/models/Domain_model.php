@@ -34,8 +34,8 @@ class Domain_model extends CI_Model
         return $passed;
     }
 
-    public function statistic($domain_id) {
-        $totals = $this->db->where(array('domain_id' => $domain_id))->count_all_results('visitor_domains');
+    public function statistic($domain_id, $start_date, $end_date) {
+        $totals = $this->db->where(array('domain_id' => $domain_id, 'first_visit>' => (int)$start_date, 'first_visit<' => (int)$end_date))->count_all_results('visitor_stats');
         return array('totals' => $totals);
     }
 

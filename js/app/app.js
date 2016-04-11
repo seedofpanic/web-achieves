@@ -365,12 +365,35 @@
         .controller('domainStatisticController', ['$http', 'route', function ($http, route) {
             var that = this;
             this.domain_id = route['search']['domain_id'];
-            $http.get(API_URL + 'domain/' + that.domain_id + '/statistics').success(function (statistic) {
-                that.statistic = statistic;
-            });
+            this.get = function (force) {
+                var params = {};
+                if (!force) {
+                    params.start_date = that.statistic.start_date;
+                    params.end_date = that.statistic.end_date;
+                    if (!(params.start_date && params.end_date)) {
+                        return
+                    }
+                }
+                that.loading = true;
+                $http.get(API_URL + 'domain/' + that.domain_id + '/statistics', {params: params}).success(function (statistic) {
+                    that.statistic = statistic;
+                    that.loading = false;
+                }).error(function () {
+                    that.loading = false;
+                });
+            };
+            this.get(true);
         }]);
 
     angular.module('UITools', [])
+    .directive('datetimepicker', function(){
+        return {
+            restrict: 'C',
+            link: function (scope, element, attr) {
+                $(element).datetimepicker();
+            }
+        }
+    })
     .directive('checkbox', function () {
         return {
             scope: {},

@@ -88,15 +88,32 @@ class Api extends CI_Controller
         }
 
         if ($action == 'statistics') {
+            // Даты за которые выбирать
+            $start_date_str = $this->input->get('start_date');
+            $end_date_str = $this->input->get('end_date');
+            if ($start_date_str) {
+                $start_date = (new DateTime($start_date_str))->getTimestamp();
+            } else {
+                $start_date = (new DateTime())->modify('-1 month')->getTimestamp();
+            }
+            if ($end_date_str) {
+                $end_date = (new DateTime($end_date_str))->getTimestamp();
+            } else {
+                $end_date = (new DateTime())->getTimestamp();
+            }
+
             $this->load->model('Achievment_model');
-            $data = $this->Domain_model->statistic($id);
+            $data = $this->Domain_model->statistic($id, $start_date, $end_date);
+
             $statistic = array(
+                'start_date' => date('Y/m/d h:i', $start_date),
+                'end_date' => date('Y/m/d h:i', $end_date),
                 'vals' => array(
                     array('name' => 'Поситителей зарегистрировано', 'data' => $data['totals'])
                 )
             );
             $statistic['totals'] = $data['totals'];
-            $statistic['achieves'] = $this->Achievment_model->statistic($id);
+            $statistic['achieves'] = $this->Achievment_model->statistic($id, $start_date, $end_date);
             print json_encode($statistic);
         }
         if ($action == 'starter_pack') {

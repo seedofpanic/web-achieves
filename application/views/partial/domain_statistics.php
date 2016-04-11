@@ -9,14 +9,31 @@
         <i class="right chevron icon divider"></i>
         <div class="active section">{{domain.name}} - Статистика</div>
     </div>
-    <table class="ui table bordered">
-        <tr ng-repeat="val in dsc.statistic.vals">
-            <td>{{val.name}}</td>
-            <td class="right aligned">{{val.data}}</td>
-        </tr>
-        <tr ng-repeat="achieve in dsc.statistic.achieves">
-            <td>{{achieve.name}}</td>
-            <td class="right aligned">{{achieve.totals}} ({{(achieve.totals / dsc.statistic.totals) * 100 | number:0}}%)</td>
-        </tr>
-    </table>
+    <div class="ui form">
+        <div class="two fields">
+            <div class="field">
+                <label>Начиная с:</label>
+                <input class="datetimepicker" type="text" ng-model="dsc.statistic.start_date" ng-change="dsc.get()">
+            </div>
+            <div class="field">
+                <label>Заканчивая:</label>
+                <input class="datetimepicker" type="text" ng-model="dsc.statistic.end_date" ng-change="dsc.get()">
+            </div>
+        </div>
+    </div>
+    <div style="position: relative">
+        <div class="ui dimmer" ng-class="{active: dsc.loading}">
+            <div class="ui loader"></div>
+        </div>
+        <table class="ui table bordered">
+            <tr ng-repeat="val in dsc.statistic.vals">
+                <td>{{val.name}}</td>
+                <td class="right aligned">{{val.data}}</td>
+            </tr>
+            <tr ng-repeat="achieve in dsc.statistic.achieves">
+                <td>{{achieve.name}}</td>
+                <td class="right aligned">{{achieve.totals}} ({{(achieve.totals / dsc.statistic.totals) * 100 | number:0}}%)</td>
+            </tr>
+        </table>
+    </div>
 </div>

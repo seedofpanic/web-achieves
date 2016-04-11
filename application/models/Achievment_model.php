@@ -125,9 +125,12 @@ class Achievment_model extends CI_Model
         return $query->result();
     }
 
-    public function statistic($domain_id) {
-        $this->db->select('a.*,(SELECT count(id) FROM visitor_achieves va WHERE va.achieve_id=a.id) as totals', false);
-        $query = $this->db->get_where('achieves a', array('domain_id' => $domain_id, 'deleted' => 0));
+    public function statistic($domain_id, $start_date, $end_date) {
+        $this->db
+            ->select('a.*,(SELECT count(va.id) FROM visitor_achieves va
+            INNER JOIN visitor_stats vs on vs.visitor_id=va.visitor_id and vs.domain_id=' . $domain_id . ' and vs.first_visit>' . (int)$start_date . ' and vs.first_visit<' . (int)$end_date . '
+            WHERE va.achieve_id=a.id and achieve_date>' . (int)$start_date . ' and achieve_date<' . (int)$end_date . ') as totals', false);
+        $query = $this->db->get_where('achieves a', array('a.domain_id' => $domain_id, 'a.deleted' => 0));
         return $query->result();
     }
 
